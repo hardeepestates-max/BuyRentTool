@@ -661,42 +661,107 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            header {
+                padding: 1.25rem 1rem;
+            }
+
             header h1 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
 
-            .nav-tabs {
-                gap: 0.25rem;
-            }
-
-            .nav-tab {
-                padding: 0.5rem 1rem;
+            header p {
                 font-size: 0.85rem;
             }
 
+            .nav-tabs {
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 0.75rem;
+                gap: 0.5rem;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
             .container {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .card h2 {
+                font-size: 1.05rem;
+            }
+
+            .card h3 {
+                font-size: 0.95rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.85rem 0.75rem;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .result-card {
                 padding: 1rem;
             }
 
+            .result-card h4 {
+                font-size: 0.7rem;
+            }
+
             .result-card .amount {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
+            }
+
+            .result-card .detail {
+                font-size: 0.7rem;
             }
 
             .property-type-switcher {
-                gap: 0.35rem;
+                gap: 0.3rem;
             }
 
             .property-type-btn {
-                padding: 0.6rem 0.85rem;
-                min-width: 90px;
+                padding: 0.5rem 0.75rem;
+                min-width: 80px;
             }
 
             .property-icon {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .property-label {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
             }
 
             .dwelling-type-switcher {
@@ -713,14 +778,50 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.3rem;
+                padding: 0.75rem;
+            }
+
+            .dwelling-info-card strong {
+                font-size: 0.85rem;
             }
 
             .dwelling-info-card span {
                 font-size: 0.75rem;
             }
 
-            .card h2 {
-                font-size: 1.1rem;
+            .comparison-table {
+                font-size: 0.75rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem 0.35rem;
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 400px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .property-type-switcher {
+                flex-wrap: wrap;
+            }
+
+            .property-type-btn {
+                min-width: 70px;
+                padding: 0.4rem 0.5rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
             }
         }
     </style>
