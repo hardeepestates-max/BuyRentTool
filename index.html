@@ -1,1 +1,2962 @@
-github.com/hardeepestates-max/buyrenttool
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free mortgage calculator. Compare down payments, estimate rates by credit score, see buy vs rent analysis. Auto-detects your state for accurate local data.">
+    <meta name="keywords" content="mortgage calculator, buy vs rent, home affordability, down payment comparison, credit score mortgage rate">
+    <meta property="og:title" content="BuyRentTool - Free Mortgage Calculator">
+    <meta property="og:description" content="Compare mortgages, estimate rates, and see what you can afford. Free, no sign-up.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://buyersmath.com">
+    <title>BuyRentTool - Free Mortgage & Home Affordability Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1877F2;
+            --primary-dark: #1565c0;
+            --primary-light: #4293f5;
+            --secondary: #42b72a;
+            --accent: #f7b928;
+            --warning: #f7b928;
+            --danger: #fa3e3e;
+            --success: #42b72a;
+            --dark: #1c1e21;
+            --gray: #65676b;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --cream: #f0f2f5;
+            --soft-border: #dddfe2;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--cream);
+            color: var(--dark);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            padding: 0.7rem 1.25rem;
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary);
+            background: rgba(24, 119, 242, 0.08);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid var(--soft-border);
+        }
+
+        .card h2 {
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--soft-border);
+        }
+
+        .card h3 {
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 0.875rem;
+            border: 1px solid var(--soft-border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.15s ease;
+            background: var(--white);
+            color: var(--dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: #36a420;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-card {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--soft-border);
+        }
+
+        .result-card.highlight {
+            background: #e7f3ff;
+            border-color: var(--primary);
+        }
+
+        .result-card h4 {
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card .amount {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .result-card .detail {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+
+        .result-card.down-5 { border-left: 4px solid var(--danger); }
+        .result-card.down-10 { border-left: 4px solid var(--warning); }
+        .result-card.down-20 { border-left: 4px solid var(--secondary); }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .comparison-table th {
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Credit Score Slider */
+        .credit-slider-container {
+            margin: 1.5rem 0;
+        }
+
+        .credit-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #ef4444 0%, #f59e0b 25%, #eab308 50%, #22c55e 75%, #10b981 100%);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .credit-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .credit-display {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .credit-score {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .credit-rating {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .rate-estimate {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: 1rem;
+        }
+
+        /* State Stats */
+        .state-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .state-item {
+            background: var(--light-gray);
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .state-item:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .state-item.selected {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .state-item .state-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .state-item .state-rent {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Breakeven Chart */
+        .breakeven-visual {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .breakeven-bar {
+            height: 40px;
+            background: linear-gradient(to right, var(--danger) 0%, var(--warning) 50%, var(--secondary) 100%);
+            border-radius: 8px;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .breakeven-marker {
+            position: absolute;
+            top: -10px;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .breakeven-marker::after {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 60px;
+            background: var(--dark);
+            margin: 0 auto;
+        }
+
+        /* PMI Badge */
+        .pmi-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pmi-badge.has-pmi {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pmi-badge.no-pmi {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Affordability Meter */
+        .affordability-meter {
+            height: 20px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .affordability-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .affordability-fill.safe { background: var(--secondary); }
+        .affordability-fill.caution { background: var(--warning); }
+        .affordability-fill.danger { background: var(--danger); }
+
+        /* Info Box */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Property Type Switcher */
+        .property-type-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .property-type-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.85);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            min-width: 110px;
+        }
+
+        .property-type-btn:hover {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .property-type-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            border-color: var(--white);
+        }
+
+        .property-icon {
+            font-size: 1.5rem;
+        }
+
+        .property-label {
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        /* Dwelling Type Switcher (Sub-category for Single Family) */
+        .dwelling-type-switcher {
+            display: none;
+            justify-content: center;
+            gap: 0.35rem;
+            margin-top: 0.75rem;
+        }
+
+        body.single-family .dwelling-type-switcher {
+            display: flex;
+        }
+
+        .dwelling-type-btn {
+            padding: 0.4rem 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+
+        .dwelling-type-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+        }
+
+        .dwelling-type-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            border-color: var(--white);
+        }
+
+        .dwelling-type-btn .dwelling-icon {
+            margin-right: 0.35rem;
+        }
+
+        /* Dwelling Info Panel */
+        .dwelling-info-panel {
+            margin-bottom: 1.5rem;
+        }
+
+        .dwelling-info-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.25rem;
+            padding: 0.875rem 1rem;
+            background: #e7f3ff;
+            border-radius: 6px;
+            border: 1px solid #cce4ff;
+            align-items: center;
+        }
+
+        .dwelling-info-card strong {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .dwelling-info-card span {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Property Type Specific Styling */
+        .property-type-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .indicator-single { background: #e7f3ff; color: #1877F2; }
+        .indicator-multi { background: #e6f7e6; color: #42b72a; }
+        .indicator-commercial { background: #fff4e6; color: #f7b928; }
+
+        /* Multi-Family Specific */
+        .rental-income-section {
+            background: #e6f7e6;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+            border: 1px solid #c8e6c8;
+        }
+
+        .rental-income-section h4 {
+            color: #42b72a;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        /* Commercial Specific */
+        .commercial-metrics {
+            background: #fff8e6;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+            border: 1px solid #ffe6b3;
+        }
+
+        .commercial-metrics h4 {
+            color: #d69800;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        /* Unit Input Group */
+        .unit-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .unit-input-group input {
+            flex: 1;
+        }
+
+        .unit-input-group .unit-label {
+            background: var(--light-gray);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Property type visibility */
+        .single-family-only,
+        .multi-family-only,
+        .commercial-only {
+            display: none;
+        }
+
+        body.single-family .single-family-only {
+            display: block;
+        }
+
+        body.multi-family .multi-family-only {
+            display: block;
+        }
+
+        body.commercial .commercial-only {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1.25rem 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header p {
+                font-size: 0.85rem;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding: 0.75rem;
+                gap: 0.5rem;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .container {
+                padding: 0.75rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .card h2 {
+                font-size: 1.05rem;
+            }
+
+            .card h3 {
+                font-size: 0.95rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.85rem 0.75rem;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .result-card {
+                padding: 1rem;
+            }
+
+            .result-card h4 {
+                font-size: 0.7rem;
+            }
+
+            .result-card .amount {
+                font-size: 1.1rem;
+            }
+
+            .result-card .detail {
+                font-size: 0.7rem;
+            }
+
+            .property-type-switcher {
+                gap: 0.3rem;
+            }
+
+            .property-type-btn {
+                padding: 0.5rem 0.75rem;
+                min-width: 80px;
+            }
+
+            .property-icon {
+                font-size: 1.1rem;
+            }
+
+            .property-label {
+                font-size: 0.65rem;
+            }
+
+            .dwelling-type-switcher {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .dwelling-type-btn {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.65rem;
+            }
+
+            .dwelling-info-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+                padding: 0.75rem;
+            }
+
+            .dwelling-info-card strong {
+                font-size: 0.85rem;
+            }
+
+            .dwelling-info-card span {
+                font-size: 0.75rem;
+            }
+
+            .comparison-table {
+                font-size: 0.75rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem 0.35rem;
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 400px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .property-type-switcher {
+                flex-wrap: wrap;
+            }
+
+            .property-type-btn {
+                min-width: 70px;
+                padding: 0.4rem 0.5rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="single-family">
+    <header>
+        <h1>BuyRentTool</h1>
+        <p>Smart Real Estate Calculator - Make Informed Decisions</p>
+
+        <!-- Property Type Switcher -->
+        <div class="property-type-switcher">
+            <button class="property-type-btn active" data-type="single-family">
+                <span class="property-icon">🏠</span>
+                <span class="property-label">Single Family</span>
+            </button>
+            <button class="property-type-btn" data-type="multi-family">
+                <span class="property-icon">🏢</span>
+                <span class="property-label">Multi-Family</span>
+            </button>
+            <button class="property-type-btn" data-type="commercial">
+                <span class="property-icon">🏬</span>
+                <span class="property-label">Commercial</span>
+            </button>
+        </div>
+
+        <!-- Dwelling Type Switcher (Sub-category for Single Family) -->
+        <div class="dwelling-type-switcher">
+            <button class="dwelling-type-btn active" data-dwelling="sfh">
+                <span class="dwelling-icon">🏡</span>Single Family
+            </button>
+            <button class="dwelling-type-btn" data-dwelling="townhome">
+                <span class="dwelling-icon">🏘️</span>Townhome
+            </button>
+            <button class="dwelling-type-btn" data-dwelling="condo">
+                <span class="dwelling-icon">🏙️</span>Condo
+            </button>
+            <button class="dwelling-type-btn" data-dwelling="coop">
+                <span class="dwelling-icon">🏛️</span>Co-op
+            </button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-section="mortgage">Mortgage Compare</button>
+        <button class="nav-tab" data-section="credit">Rate by Credit</button>
+        <button class="nav-tab" data-section="rent">Rent Averages</button>
+        <button class="nav-tab" data-section="breakeven">Buy vs Rent</button>
+        <button class="nav-tab" data-section="affordability">What Can I Afford</button>
+    </nav>
+
+    <div class="container">
+        <!-- Mortgage Comparison Section -->
+        <section id="mortgage" class="section active">
+            <div class="card">
+                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 20%</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;" id="mortgageSubtitle">See how different down payments affect your monthly payment, PMI, and total cost.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="homePrice" id="homePriceLabel">Home Price ($)</label>
+                        <input type="number" id="homePrice" value="400000" min="50000" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="interestRate">Interest Rate (%)</label>
+                        <input type="number" id="interestRate" value="6.5" min="1" max="15" step="0.125">
+                    </div>
+                    <div class="form-group">
+                        <label for="loanTerm">Loan Term</label>
+                        <select id="loanTerm">
+                            <option value="30">30 Years</option>
+                            <option value="15">15 Years</option>
+                            <option value="20">20 Years</option>
+                            <option value="25">25 Years</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="propertyTax">Property Tax (% yearly)</label>
+                        <input type="number" id="propertyTax" value="1.1" min="0" max="5" step="0.1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="propertyInsurance">Property Insurance ($/yr)</label>
+                        <input type="number" id="propertyInsurance" value="1800" min="500" step="100">
+                        <small style="color: var(--gray);">Annual homeowners insurance</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="hoaFees">HOA Fees ($/mo)</label>
+                        <input type="number" id="hoaFees" value="0" min="0" step="25">
+                        <small style="color: var(--gray);">Monthly, if applicable</small>
+                    </div>
+                    <div class="form-group single-family-only">
+                        <label for="stateSelectMortgage">State</label>
+                        <select id="stateSelectMortgage" onchange="updateStateDefaults()">
+                            <option value="">-- Select State --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Multi-Family Specific Inputs -->
+                <div class="multi-family-only rental-income-section">
+                    <h4>Multi-Family Rental Income</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="numUnits">Number of Units</label>
+                            <select id="numUnits">
+                                <option value="2">Duplex (2 units)</option>
+                                <option value="3">Triplex (3 units)</option>
+                                <option value="4">Fourplex (4 units)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rentPerUnit">Avg Rent per Unit ($/mo)</label>
+                            <input type="number" id="rentPerUnit" value="1500" min="500" step="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="occupancyRate">Occupancy Rate (%)</label>
+                            <input type="number" id="occupancyRate" value="95" min="50" max="100" step="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="ownerOccupied">Owner Occupied?</label>
+                            <select id="ownerOccupied">
+                                <option value="yes">Yes - Living in 1 unit</option>
+                                <option value="no">No - Full rental</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="info-box" style="margin-top: 1rem;">
+                        <p><strong>FHA Tip:</strong> Owner-occupied 2-4 unit properties qualify for FHA loans with as little as 3.5% down. Rental income can count toward qualification!</p>
+                    </div>
+                </div>
+
+                <!-- Commercial Specific Inputs -->
+                <div class="commercial-only commercial-metrics">
+                    <h4>Commercial Property Analysis</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="propertyType">Property Type</label>
+                            <select id="propertyType">
+                                <option value="retail">Retail</option>
+                                <option value="office">Office</option>
+                                <option value="industrial">Industrial</option>
+                                <option value="multifamily5plus">Multi-Family (5+ units)</option>
+                                <option value="mixeduse">Mixed Use</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="annualNOI">Annual NOI ($)</label>
+                            <input type="number" id="annualNOI" value="60000" min="10000" step="5000">
+                        </div>
+                        <div class="form-group">
+                            <label for="sqFootage">Square Footage</label>
+                            <input type="number" id="sqFootage" value="5000" min="500" step="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="commercialRate">Commercial Rate (%)</label>
+                            <input type="number" id="commercialRate" value="7.5" min="4" max="15" step="0.125">
+                        </div>
+                    </div>
+                    <div class="info-box" style="margin-top: 1rem;">
+                        <p><strong>Note:</strong> Commercial loans typically require 20-35% down, have shorter terms (5-25 years), and use DSCR (Debt Service Coverage Ratio) for qualification.</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculateMortgage()">Calculate & Compare</button>
+
+                <div id="mortgageResults" class="results-grid" style="display: none;">
+                    <!-- Results populated by JS -->
+                </div>
+
+                <div id="mortgageTable" style="display: none;">
+                    <h3 style="margin-top: 2rem;">Detailed Comparison</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="comparison-table">
+                            <thead id="comparisonHead">
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>5% Down</th>
+                                    <th>10% Down</th>
+                                    <th>20% Down</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Email Export Section -->
+                    <div id="emailExportSection" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--soft-border);">
+                        <h4 style="margin-bottom: 1rem; color: var(--dark);">Save Your Results</h4>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;">
+                            <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                                <label for="exportEmail">Email Address</label>
+                                <input type="email" id="exportEmail" placeholder="your@email.com">
+                            </div>
+                            <button class="btn btn-primary" onclick="emailResults()" style="white-space: nowrap;">
+                                Email Results
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadPDF()" style="white-space: nowrap; background: var(--gray);">
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Family Averages -->
+            <div class="card single-family-only">
+                <h3 id="marketDataTitle">Market Data - Single Family Home (2024-2025 Avg)</h3>
+
+                <!-- Dwelling Type Info Panel -->
+                <div id="dwellingTypeInfo" class="dwelling-info-panel">
+                    <div class="dwelling-info-card">
+                        <strong>Single Family Home</strong>
+                        <span>Detached single-family residence</span>
+                        <span>Avg Sq Ft: 1,800 - 2,400</span>
+                        <span>Typical HOA: $0/mo</span>
+                        <span>Avg Appreciation: 5.2%/yr</span>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>National Median Price</h4>
+                        <div class="amount" id="nationalMedianPrice">$428,000</div>
+                        <div class="detail" id="nationalMedianDetail">2024-2025 average</div>
+                    </div>
+                    <div class="result-card" id="stateMedianCard" style="display: none;">
+                        <h4 id="stateMedianLabel">State Median</h4>
+                        <div class="amount" id="stateMedianPrice">$0</div>
+                        <div class="detail" id="stateMedianCompare"></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>15-Year Fixed</h4>
+                        <div class="amount">6.10%</div>
+                        <div class="detail">National average</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>20-Year Fixed</h4>
+                        <div class="amount">6.55%</div>
+                        <div class="detail">National average</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>30-Year Fixed</h4>
+                        <div class="amount">6.85%</div>
+                        <div class="detail">National average</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Avg Appreciation</h4>
+                        <div class="amount">4.8%</div>
+                        <div class="detail">Annual, 2024-2025</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Avg Down Payment</h4>
+                        <div class="amount">14.5%</div>
+                        <div class="detail">First-time: 8%</div>
+                    </div>
+                </div>
+
+                <!-- State Price by Sq Ft Breakdown - shown when state selected -->
+                <div id="stateSqftBreakdown" style="display: none; margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;" id="sqftBreakdownTitle">Median Prices by Size</h4>
+                    <div class="results-grid" style="margin-top: 0;">
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">Under 2,000 sq ft</h4>
+                            <div class="amount" style="font-size: 1.4rem;" id="mortgageSqftUnder2k">$0</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">2,000 - 3,000 sq ft</h4>
+                            <div class="amount" style="font-size: 1.4rem;" id="mortgageSqft2k3k">$0</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">3,000 - 4,000 sq ft</h4>
+                            <div class="amount" style="font-size: 1.4rem;" id="mortgageSqft3k4k">$0</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">4,000+ sq ft</h4>
+                            <div class="amount" style="font-size: 1.4rem;" id="mortgageSqft4kplus">$0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Family Averages -->
+            <div class="card multi-family-only">
+                <h3>National Averages - Multi-Family 2-4 Units (December 2024)</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Median Duplex Price</h4>
+                        <div class="amount">$475,000</div>
+                        <div class="detail">Varies by market</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Avg Cap Rate</h4>
+                        <div class="amount">5.5%</div>
+                        <div class="detail">Small multi-family</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>FHA Min Down</h4>
+                        <div class="amount">3.5%</div>
+                        <div class="detail">Owner-occupied only</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Conventional Min</h4>
+                        <div class="amount">15-25%</div>
+                        <div class="detail">Investment property</div>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 1rem;">
+                    <p><strong>House Hacking:</strong> Live in one unit and rent the others. FHA allows 75% of projected rental income to count toward qualifying!</p>
+                </div>
+            </div>
+
+            <!-- Commercial Averages -->
+            <div class="card commercial-only">
+                <h3>National Averages - Commercial (December 2024)</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Avg Cap Rate</h4>
+                        <div class="amount">6.5-8%</div>
+                        <div class="detail">Varies by asset class</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Commercial Rates</h4>
+                        <div class="amount">7.0-8.5%</div>
+                        <div class="detail">Higher than residential</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Min Down Payment</h4>
+                        <div class="amount">20-35%</div>
+                        <div class="detail">SBA: 10-20%</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Typical DSCR Req</h4>
+                        <div class="amount">1.25x</div>
+                        <div class="detail">NOI / Debt Service</div>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 1rem;">
+                    <p><strong>Cap Rate = NOI / Purchase Price.</strong> A 7% cap rate on a $1M property = $70,000 annual NOI. Lower cap = pricier market.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credit Score Section -->
+        <section id="credit" class="section">
+            <div class="card">
+                <h2>Estimate Your Rate by Credit Score</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Your credit score significantly impacts your mortgage rate. See how yours might affect your payment.</p>
+
+                <div class="credit-slider-container">
+                    <label style="font-weight: 500;">Slide to your credit score:</label>
+                    <input type="range" class="credit-slider" id="creditSlider" min="300" max="850" value="720">
+
+                    <div class="credit-display">
+                        <div class="credit-score" id="creditScoreDisplay">720</div>
+                        <div class="credit-rating" id="creditRating">Good</div>
+                        <div class="rate-estimate" id="rateEstimate">Estimated Rate: 6.5%</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>How it works:</strong> Lenders use credit scores to assess risk. Higher scores typically mean lower rates because you're seen as less likely to default.</p>
+                </div>
+
+                <h3 style="margin-top: 2rem;">Rate Impact on $400,000 Home (10% Down)</h3>
+                <div id="creditImpactResults" class="results-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Credit Score Tiers & Typical Rates</h3>
+                <div style="overflow-x: auto;">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Score Range</th>
+                                <th>Rating</th>
+                                <th>15-Year Fixed</th>
+                                <th>20-Year Fixed</th>
+                                <th>30-Year Fixed</th>
+                                <th>Approval</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>760-850</td>
+                                <td style="color: #42b72a; font-weight: 600;">Excellent</td>
+                                <td>5.75%</td>
+                                <td>6.15%</td>
+                                <td>6.50%</td>
+                                <td>Very High</td>
+                            </tr>
+                            <tr>
+                                <td>700-759</td>
+                                <td style="color: #42b72a; font-weight: 600;">Good</td>
+                                <td>6.10%</td>
+                                <td>6.55%</td>
+                                <td>6.85%</td>
+                                <td>High</td>
+                            </tr>
+                            <tr>
+                                <td>660-699</td>
+                                <td style="color: #f7b928; font-weight: 600;">Fair</td>
+                                <td>6.50%</td>
+                                <td>6.95%</td>
+                                <td>7.25%</td>
+                                <td>Moderate</td>
+                            </tr>
+                            <tr>
+                                <td>620-659</td>
+                                <td style="color: #e89b00; font-weight: 600;">Below Avg</td>
+                                <td>7.10%</td>
+                                <td>7.55%</td>
+                                <td>7.85%</td>
+                                <td>Lower</td>
+                            </tr>
+                            <tr>
+                                <td>580-619</td>
+                                <td style="color: #fa3e3e; font-weight: 600;">Poor</td>
+                                <td>7.75%</td>
+                                <td>8.25%</td>
+                                <td>8.50%</td>
+                                <td>FHA Option</td>
+                            </tr>
+                            <tr>
+                                <td>Below 580</td>
+                                <td style="color: #c92a2a; font-weight: 600;">Very Poor</td>
+                                <td>8.50%+</td>
+                                <td>9.00%+</td>
+                                <td>9.25%+</td>
+                                <td>Difficult</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rent Averages Section -->
+        <section id="rent" class="section">
+            <div class="card">
+                <h2>National & State Rent Averages</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Compare rent costs across the United States (2024-2025 averages).</p>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>National Average Rent</h4>
+                        <div class="amount">$2,050</div>
+                        <div class="detail">All unit types, 2024-2025</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>1-Bedroom Average</h4>
+                        <div class="amount">$1,595</div>
+                        <div class="detail">National median</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>2-Bedroom Average</h4>
+                        <div class="amount">$1,925</div>
+                        <div class="detail">National median</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>3-Bedroom Average</h4>
+                        <div class="amount">$2,350</div>
+                        <div class="detail">National median</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>4+ Bedroom Average</h4>
+                        <div class="amount">$2,850</div>
+                        <div class="detail">National median</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Year-over-Year Change</h4>
+                        <div class="amount">+3.2%</div>
+                        <div class="detail">2024-2025 avg</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Select a State to See Details</h3>
+                <div class="form-group">
+                    <select id="stateSelect" onchange="showStateDetails()">
+                        <option value="">-- Select a State --</option>
+                    </select>
+                </div>
+
+                <div id="stateDetails" style="display: none;">
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <h4>Average Rent</h4>
+                            <div class="amount" id="stateRent">$0</div>
+                            <div class="detail" id="stateRentCompare"></div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Median Home Price</h4>
+                            <div class="amount" id="stateHomePrice">$0</div>
+                            <div class="detail" id="stateHomePriceCompare"></div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Property Tax Rate</h4>
+                            <div class="amount" id="stateTaxRate">0%</div>
+                            <div class="detail" id="stateTaxCompare"></div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Avg Insurance/yr</h4>
+                            <div class="amount" id="stateInsurance">$0</div>
+                            <div class="detail" id="stateInsuranceCompare"></div>
+                        </div>
+                    </div>
+
+                    <!-- Square Footage Breakdown -->
+                    <div class="card" style="margin-top: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #fff 100%); border: 1px solid #bfdbfe;">
+                        <h4 style="color: #1e40af; margin-bottom: 1rem;">Median Price by Square Footage</h4>
+                        <div class="results-grid" style="margin-top: 0;">
+                            <div class="result-card" style="background: #fff;">
+                                <h4>Under 2,000 sq ft</h4>
+                                <div class="amount" id="sqftUnder2k">$0</div>
+                                <div class="detail">Starter homes</div>
+                            </div>
+                            <div class="result-card" style="background: #fff;">
+                                <h4>2,000 - 3,000 sq ft</h4>
+                                <div class="amount" id="sqft2k3k">$0</div>
+                                <div class="detail">Family homes</div>
+                            </div>
+                            <div class="result-card" style="background: #fff;">
+                                <h4>3,000 - 4,000 sq ft</h4>
+                                <div class="amount" id="sqft3k4k">$0</div>
+                                <div class="detail">Larger homes</div>
+                            </div>
+                            <div class="result-card" style="background: #fff;">
+                                <h4>4,000+ sq ft</h4>
+                                <div class="amount" id="sqft4kplus">$0</div>
+                                <div class="detail">Luxury homes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem;">All States Overview</h3>
+                <div class="state-grid" id="stateGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Most & Least Expensive Markets</h3>
+                <div class="form-row">
+                    <div>
+                        <h4 style="color: var(--danger); margin-bottom: 1rem;">Highest Rent States</h4>
+                        <table class="comparison-table">
+                            <tbody>
+                                <tr><td>1. Hawaii</td><td style="font-weight: 600;">$2,838</td></tr>
+                                <tr><td>2. California</td><td style="font-weight: 600;">$2,680</td></tr>
+                                <tr><td>3. Massachusetts</td><td style="font-weight: 600;">$2,581</td></tr>
+                                <tr><td>4. New York</td><td style="font-weight: 600;">$2,456</td></tr>
+                                <tr><td>5. New Jersey</td><td style="font-weight: 600;">$2,298</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--secondary); margin-bottom: 1rem;">Lowest Rent States</h4>
+                        <table class="comparison-table">
+                            <tbody>
+                                <tr><td>1. West Virginia</td><td style="font-weight: 600;">$953</td></tr>
+                                <tr><td>2. Arkansas</td><td style="font-weight: 600;">$987</td></tr>
+                                <tr><td>3. South Dakota</td><td style="font-weight: 600;">$1,012</td></tr>
+                                <tr><td>4. Oklahoma</td><td style="font-weight: 600;">$1,045</td></tr>
+                                <tr><td>5. Kentucky</td><td style="font-weight: 600;">$1,067</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buy vs Rent Section -->
+        <section id="breakeven" class="section">
+            <div class="card">
+                <h2>Buy vs Rent: Breakeven Analysis</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Find out how long you need to stay in a home for buying to make more financial sense than renting.</p>
+
+                <!-- State Selector for Buy vs Rent -->
+                <div class="form-row" style="margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label for="bvStateSelect">Select State (auto-fills data)</label>
+                        <select id="bvStateSelect" onchange="updateBuyRentStateDefaults()">
+                            <option value="">-- Select State for Market Data --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- State Market Data Display -->
+                <div id="bvStateMarketData" style="display: none; margin-bottom: 1.5rem;">
+                    <div class="results-grid">
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">State Median Price</h4>
+                            <div class="amount" style="font-size: 1.3rem;" id="bvStateMedian">$0</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">State Avg Rent</h4>
+                            <div class="amount" style="font-size: 1.3rem;" id="bvStateRent">$0</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">Property Tax</h4>
+                            <div class="amount" style="font-size: 1.3rem;" id="bvStateTax">0%</div>
+                        </div>
+                        <div class="result-card" style="padding: 1rem;">
+                            <h4 style="font-size: 0.75rem;">Insurance/yr</h4>
+                            <div class="amount" style="font-size: 1.3rem;" id="bvStateInsurance">$0</div>
+                        </div>
+                    </div>
+
+                    <!-- Sq Ft Breakdown for Buy vs Rent -->
+                    <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #fff 100%); border-radius: 8px; border: 1px solid #bfdbfe;">
+                        <h4 style="color: #1e40af; margin-bottom: 0.75rem; font-size: 0.9rem;" id="bvSqftTitle">Median Prices by Size</h4>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--gray);">Under 2k sqft</div>
+                                <div style="font-weight: 600;" id="bvSqftUnder2k">$0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--gray);">2k-3k sqft</div>
+                                <div style="font-weight: 600;" id="bvSqft2k3k">$0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--gray);">3k-4k sqft</div>
+                                <div style="font-weight: 600;" id="bvSqft3k4k">$0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--gray);">4k+ sqft</div>
+                                <div style="font-weight: 600;" id="bvSqft4kplus">$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bvHomePrice">Home Price ($)</label>
+                        <input type="number" id="bvHomePrice" value="400000" min="50000" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvDownPayment">Down Payment (%)</label>
+                        <input type="number" id="bvDownPayment" value="10" min="3" max="50" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvInterestRate">Interest Rate (%)</label>
+                        <input type="number" id="bvInterestRate" value="6.5" min="1" max="15" step="0.125">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvMonthlyRent">Current/Comparable Rent ($)</label>
+                        <input type="number" id="bvMonthlyRent" value="2000" min="500" step="50">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bvAppreciation">Home Appreciation (%/yr)</label>
+                        <input type="number" id="bvAppreciation" value="3" min="0" max="10" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvRentIncrease">Rent Increase (%/yr)</label>
+                        <input type="number" id="bvRentIncrease" value="3" min="0" max="10" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvPropertyTax">Property Tax (%/yr)</label>
+                        <input type="number" id="bvPropertyTax" value="1.1" min="0" max="5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="bvClosingCosts">Closing Costs (%)</label>
+                        <input type="number" id="bvClosingCosts" value="3" min="1" max="6" step="0.5">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculateBreakeven()">Calculate Breakeven</button>
+
+                <div id="breakevenResults" style="display: none;">
+                    <div class="results-grid" style="margin-top: 1.5rem;">
+                        <div class="result-card">
+                            <h4>Breakeven Point</h4>
+                            <div class="amount" id="breakevenYears">0 years</div>
+                            <div class="detail">When buying becomes cheaper</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Monthly Buy Cost</h4>
+                            <div class="amount" id="monthlyBuyCost">$0</div>
+                            <div class="detail">Principal, interest, tax, insurance</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Total Rent (5 yrs)</h4>
+                            <div class="amount" id="totalRent5">$0</div>
+                            <div class="detail">Money that builds no equity</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Equity Built (5 yrs)</h4>
+                            <div class="amount" id="equityBuilt5">$0</div>
+                            <div class="detail">Your ownership stake</div>
+                        </div>
+                    </div>
+
+                    <div class="breakeven-visual">
+                        <h4>Time to Breakeven Visualization</h4>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>0 years</span>
+                            <span>5 years</span>
+                            <span>10 years</span>
+                        </div>
+                        <div class="breakeven-bar">
+                            <div class="breakeven-marker" id="breakevenMarker" style="left: 30%;">
+                                <span id="breakevenLabel">3 yrs</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 2rem; color: var(--gray); font-size: 0.9rem;" id="breakevenAdvice"></p>
+                    </div>
+
+                    <h3 style="margin-top: 2rem;">Year-by-Year Comparison</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Total Rent Paid</th>
+                                    <th>Total Buy Costs</th>
+                                    <th>Home Equity</th>
+                                    <th>Net Position (Buy)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="breakevenTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Affordability Section -->
+        <section id="affordability" class="section">
+            <div class="card">
+                <h2>What Can I Afford?</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Based on your income and debts, see what lenders might approve you for using industry-standard DTI ratios.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="annualIncome">Annual Gross Income ($)</label>
+                        <input type="number" id="annualIncome" value="100000" min="20000" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="monthlyDebts">Monthly Debt Payments ($)</label>
+                        <input type="number" id="monthlyDebts" value="500" min="0" step="50">
+                        <small style="color: var(--gray);">Car, student loans, credit cards, etc.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="affDownPayment">Down Payment Available ($)</label>
+                        <input type="number" id="affDownPayment" value="50000" min="0" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label for="affInterestRate">Expected Interest Rate (%)</label>
+                        <input type="number" id="affInterestRate" value="6.5" min="1" max="15" step="0.125">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="calculateAffordability()">Calculate Affordability</button>
+
+                <div id="affordabilityResults" style="display: none;">
+                    <div class="results-grid" style="margin-top: 1.5rem;">
+                        <div class="result-card highlight">
+                            <h4>Maximum Home Price</h4>
+                            <div class="amount" id="maxHomePrice">$0</div>
+                            <div class="detail">Conservative estimate</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Max Monthly Payment</h4>
+                            <div class="amount" id="maxMonthlyPayment">$0</div>
+                            <div class="detail">28% of gross income</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Front-End DTI</h4>
+                            <div class="amount" id="frontEndDTI">0%</div>
+                            <div class="detail">Housing costs / income</div>
+                        </div>
+                        <div class="result-card">
+                            <h4>Back-End DTI</h4>
+                            <div class="amount" id="backEndDTI">0%</div>
+                            <div class="detail">All debts / income</div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 1.5rem; background: var(--light-gray);">
+                        <h4>Your Affordability Breakdown</h4>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Front-End DTI (Housing Only)</span>
+                                <span id="frontEndPercent">0%</span>
+                            </div>
+                            <div class="affordability-meter">
+                                <div class="affordability-fill" id="frontEndMeter" style="width: 0%;"></div>
+                            </div>
+                            <small style="color: var(--gray);">Lenders prefer under 28%</small>
+                        </div>
+
+                        <div style="margin: 1.5rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Back-End DTI (All Debts)</span>
+                                <span id="backEndPercent">0%</span>
+                            </div>
+                            <div class="affordability-meter">
+                                <div class="affordability-fill" id="backEndMeter" style="width: 0%;"></div>
+                            </div>
+                            <small style="color: var(--gray);">Lenders prefer under 36%</small>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <p><strong>The 28/36 Rule:</strong> Lenders typically want your housing costs under 28% of gross income (front-end) and total debt payments under 36% (back-end). Some programs allow up to 43-50% back-end DTI.</p>
+                    </div>
+
+                    <h3 style="margin-top: 2rem;">Scenarios at Different Price Points</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Home Price</th>
+                                    <th>Monthly Payment</th>
+                                    <th>Front-End DTI</th>
+                                    <th>Back-End DTI</th>
+                                    <th>Assessment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="affordabilityTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Quick Affordability Rules of Thumb</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>3x Income Rule</h4>
+                        <div class="amount" id="rule3x">$0</div>
+                        <div class="detail">Conservative estimate</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>4x Income Rule</h4>
+                        <div class="amount" id="rule4x">$0</div>
+                        <div class="detail">Moderate estimate</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>5x Income Rule</h4>
+                        <div class="amount" id="rule5x">$0</div>
+                        <div class="detail">Aggressive (risky)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>BuyRentTool - Data based on 2024 national averages. For informational purposes only.</p>
+        <p>Always consult with a qualified mortgage professional for personalized advice.</p>
+    </footer>
+
+    <script>
+        // Current property type
+        let currentPropertyType = 'single-family';
+
+        // Property Type Switcher
+        document.querySelectorAll('.property-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.property-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                currentPropertyType = btn.dataset.type;
+
+                // Update body class for CSS
+                document.body.classList.remove('single-family', 'multi-family', 'commercial');
+                document.body.classList.add(currentPropertyType);
+
+                // Update UI based on property type
+                updateUIForPropertyType();
+
+                // Reset dwelling type when switching to single family
+                if (currentPropertyType === 'single-family') {
+                    currentDwellingType = 'sfh';
+                    document.querySelectorAll('.dwelling-type-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('.dwelling-type-btn[data-dwelling="sfh"]').classList.add('active');
+                    updateDwellingTypeUI();
+                }
+            });
+        });
+
+        // Dwelling Type Switcher (for Single Family sub-categories)
+        document.querySelectorAll('.dwelling-type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.dwelling-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDwellingType = btn.dataset.dwelling;
+                updateDwellingTypeUI();
+            });
+        });
+
+        function updateDwellingTypeUI() {
+            const dwelling = dwellingData[currentDwellingType];
+            const state = document.getElementById('stateSelectMortgage').value;
+            const homePrice = document.getElementById('homePrice');
+            const hoa = document.getElementById('hoa');
+            const insurance = document.getElementById('propertyInsurance');
+
+            // Get base price
+            let basePrice = 400000;
+            let baseInsurance = 1950;
+            if (state && stateData[state]) {
+                basePrice = stateData[state].homePrice;
+                baseInsurance = stateData[state].insurance;
+            }
+
+            // Apply dwelling multipliers
+            homePrice.value = Math.round(basePrice * dwelling.priceMultiplier);
+            if (hoa) hoa.value = dwelling.avgHoa;
+            if (insurance) insurance.value = Math.round(baseInsurance * dwelling.insuranceMultiplier);
+
+            // Update dwelling info display
+            updateDwellingInfoDisplay();
+
+            // Recalculate mortgage
+            calculateMortgage();
+
+            // Also update Buy vs Rent if state is selected there
+            const bvState = document.getElementById('bvStateSelect');
+            if (bvState && bvState.value) {
+                updateBuyRentStateDefaults();
+            }
+        }
+
+        function updateDwellingInfoDisplay() {
+            const dwelling = dwellingData[currentDwellingType];
+            const infoEl = document.getElementById('dwellingTypeInfo');
+
+            // Update dwelling info panel
+            if (infoEl) {
+                let notesHtml = dwelling.notes ? `<span style="color: var(--warning);">${dwelling.notes}</span>` : '';
+                infoEl.innerHTML = `
+                    <div class="dwelling-info-card">
+                        <strong>${dwelling.name}</strong>
+                        <span>${dwelling.description}</span>
+                        <span>Avg Sq Ft: ${dwelling.avgSqft}</span>
+                        <span>Typical HOA: $${dwelling.avgHoa}/mo</span>
+                        <span>Avg Appreciation: ${dwelling.appreciation}/yr</span>
+                        ${notesHtml}
+                    </div>
+                `;
+            }
+
+            // Update market data title
+            const marketTitle = document.getElementById('marketDataTitle');
+            if (marketTitle) {
+                marketTitle.textContent = `Market Data - ${dwelling.name} (2024-2025 Avg)`;
+            }
+
+            // Update national median price with dwelling multiplier
+            const nationalPrice = document.getElementById('nationalMedianPrice');
+            const nationalDetail = document.getElementById('nationalMedianDetail');
+            const baseNationalPrice = 428000;
+            const adjustedPrice = Math.round(baseNationalPrice * dwelling.priceMultiplier);
+
+            if (nationalPrice) {
+                nationalPrice.textContent = '$' + adjustedPrice.toLocaleString();
+            }
+            if (nationalDetail) {
+                if (dwelling.priceMultiplier === 1.0) {
+                    nationalDetail.textContent = '2024-2025 average';
+                } else {
+                    const pctDiff = Math.round((dwelling.priceMultiplier - 1) * 100);
+                    nationalDetail.textContent = `${pctDiff}% vs single family`;
+                }
+            }
+
+            // Update state median if shown
+            updateStatePricesForDwelling();
+        }
+
+        function updateStatePricesForDwelling() {
+            const dwelling = dwellingData[currentDwellingType];
+            const state = document.getElementById('stateSelectMortgage').value;
+
+            if (state && stateData[state]) {
+                const basePrice = stateData[state].homePrice;
+                const adjustedPrice = Math.round(basePrice * dwelling.priceMultiplier);
+
+                const stateMedianPrice = document.getElementById('stateMedianPrice');
+                if (stateMedianPrice) {
+                    stateMedianPrice.textContent = '$' + adjustedPrice.toLocaleString();
+                }
+
+                // Update sq ft breakdown with dwelling multiplier
+                const sqft = stateData[state].sqft;
+                document.getElementById('mortgageSqftUnder2k').textContent = '$' + Math.round(sqft.under2k * dwelling.priceMultiplier).toLocaleString();
+                document.getElementById('mortgageSqft2k3k').textContent = '$' + Math.round(sqft['2k-3k'] * dwelling.priceMultiplier).toLocaleString();
+                document.getElementById('mortgageSqft3k4k').textContent = '$' + Math.round(sqft['3k-4k'] * dwelling.priceMultiplier).toLocaleString();
+                document.getElementById('mortgageSqft4kplus').textContent = '$' + Math.round(sqft['4kplus'] * dwelling.priceMultiplier).toLocaleString();
+            }
+        }
+
+        function updateUIForPropertyType() {
+            const title = document.getElementById('mortgageTitle');
+            const subtitle = document.getElementById('mortgageSubtitle');
+            const priceLabel = document.getElementById('homePriceLabel');
+            const homePrice = document.getElementById('homePrice');
+            const interestRate = document.getElementById('interestRate');
+            const loanTerm = document.getElementById('loanTerm');
+
+            switch(currentPropertyType) {
+                case 'single-family':
+                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 20%';
+                    subtitle.textContent = 'See how different down payments affect your monthly payment, PMI, and total cost.';
+                    priceLabel.textContent = 'Home Price ($)';
+                    homePrice.value = 400000;
+                    interestRate.value = 6.5;
+                    loanTerm.innerHTML = '<option value="30">30 Years</option><option value="15">15 Years</option><option value="20">20 Years</option>';
+                    break;
+
+                case 'multi-family':
+                    title.textContent = 'Multi-Family: Compare Down Payments & Cash Flow';
+                    subtitle.textContent = 'Analyze 2-4 unit properties with rental income calculations.';
+                    priceLabel.textContent = 'Property Price ($)';
+                    homePrice.value = 550000;
+                    interestRate.value = 6.75;
+                    loanTerm.innerHTML = '<option value="30">30 Years</option><option value="15">15 Years</option><option value="20">20 Years</option><option value="25">25 Years</option>';
+                    break;
+
+                case 'commercial':
+                    title.textContent = 'Commercial: Down Payment & Cap Rate Analysis';
+                    subtitle.textContent = 'Analyze commercial properties with NOI, cap rate, and DSCR calculations.';
+                    priceLabel.textContent = 'Purchase Price ($)';
+                    homePrice.value = 1000000;
+                    interestRate.value = 7.5;
+                    loanTerm.innerHTML = '<option value="25">25 Years</option><option value="20">20 Years</option><option value="15">15 Years</option><option value="10">10 Years</option>';
+                    break;
+            }
+
+            // Clear previous results
+            document.getElementById('mortgageResults').style.display = 'none';
+            document.getElementById('mortgageTable').style.display = 'none';
+        }
+
+        // State Data (2024-2025 Average) with sq ft breakdowns
+        const stateData = {
+            'Alabama': { rent: 1165, homePrice: 242000, taxRate: 0.41, insurance: 1950, sqft: { under2k: 172000, '2k-3k': 224000, '3k-4k': 298000, '4kplus': 398000 } },
+            'Alaska': { rent: 1535, homePrice: 378000, taxRate: 1.19, insurance: 1480, sqft: { under2k: 294000, '2k-3k': 356000, '3k-4k': 449000, '4kplus': 583000 } },
+            'Arizona': { rent: 1612, homePrice: 448000, taxRate: 0.63, insurance: 1780, sqft: { under2k: 336000, '2k-3k': 428000, '3k-4k': 562000, '4kplus': 748000 } },
+            'Arkansas': { rent: 1015, homePrice: 208000, taxRate: 0.62, insurance: 2280, sqft: { under2k: 152000, '2k-3k': 194000, '3k-4k': 257000, '4kplus': 352000 } },
+            'California': { rent: 2745, homePrice: 815000, taxRate: 0.76, insurance: 1950, sqft: { under2k: 648000, '2k-3k': 792000, '3k-4k': 1018000, '4kplus': 1498000 } },
+            'Colorado': { rent: 1895, homePrice: 568000, taxRate: 0.51, insurance: 2580, sqft: { under2k: 439000, '2k-3k': 542000, '3k-4k': 708000, '4kplus': 955000 } },
+            'Connecticut': { rent: 1825, homePrice: 405000, taxRate: 2.15, insurance: 1780, sqft: { under2k: 310000, '2k-3k': 384000, '3k-4k': 510000, '4kplus': 720000 } },
+            'Delaware': { rent: 1498, homePrice: 382000, taxRate: 0.57, insurance: 1180, sqft: { under2k: 288000, '2k-3k': 361000, '3k-4k': 477000, '4kplus': 655000 } },
+            'Florida': { rent: 1925, homePrice: 425000, taxRate: 0.89, insurance: 4850, sqft: { under2k: 327000, '2k-3k': 410000, '3k-4k': 545000, '4kplus': 772000 } },
+            'Georgia': { rent: 1615, homePrice: 372000, taxRate: 0.92, insurance: 1890, sqft: { under2k: 278000, '2k-3k': 352000, '3k-4k': 467000, '4kplus': 645000 } },
+            'Hawaii': { rent: 2915, homePrice: 1015000, taxRate: 0.28, insurance: 1280, sqft: { under2k: 812000, '2k-3k': 998000, '3k-4k': 1292000, '4kplus': 1912000 } },
+            'Idaho': { rent: 1435, homePrice: 472000, taxRate: 0.69, insurance: 1450, sqft: { under2k: 365000, '2k-3k': 448000, '3k-4k': 582000, '4kplus': 788000 } },
+            'Illinois': { rent: 1498, homePrice: 288000, taxRate: 2.27, insurance: 1550, sqft: { under2k: 204000, '2k-3k': 268000, '3k-4k': 362000, '4kplus': 508000 } },
+            'Indiana': { rent: 1185, homePrice: 258000, taxRate: 0.85, insurance: 1350, sqft: { under2k: 184000, '2k-3k': 238000, '3k-4k': 322000, '4kplus': 448000 } },
+            'Iowa': { rent: 1098, homePrice: 225000, taxRate: 1.57, insurance: 1550, sqft: { under2k: 162000, '2k-3k': 205000, '3k-4k': 278000, '4kplus': 392000 } },
+            'Kansas': { rent: 1158, homePrice: 238000, taxRate: 1.41, insurance: 2850, sqft: { under2k: 174000, '2k-3k': 218000, '3k-4k': 292000, '4kplus': 408000 } },
+            'Kentucky': { rent: 1098, homePrice: 218000, taxRate: 0.86, insurance: 1980, sqft: { under2k: 154000, '2k-3k': 198000, '3k-4k': 272000, '4kplus': 388000 } },
+            'Louisiana': { rent: 1195, homePrice: 225000, taxRate: 0.55, insurance: 3450, sqft: { under2k: 162000, '2k-3k': 205000, '3k-4k': 278000, '4kplus': 402000 } },
+            'Maine': { rent: 1595, homePrice: 408000, taxRate: 1.36, insurance: 1250, sqft: { under2k: 312000, '2k-3k': 388000, '3k-4k': 504000, '4kplus': 685000 } },
+            'Maryland': { rent: 1925, homePrice: 438000, taxRate: 1.09, insurance: 1450, sqft: { under2k: 339000, '2k-3k': 412000, '3k-4k': 548000, '4kplus': 755000 } },
+            'Massachusetts': { rent: 2685, homePrice: 648000, taxRate: 1.23, insurance: 1780, sqft: { under2k: 512000, '2k-3k': 628000, '3k-4k': 828000, '4kplus': 1188000 } },
+            'Michigan': { rent: 1275, homePrice: 258000, taxRate: 1.54, insurance: 1450, sqft: { under2k: 184000, '2k-3k': 238000, '3k-4k': 322000, '4kplus': 458000 } },
+            'Minnesota': { rent: 1425, homePrice: 362000, taxRate: 1.12, insurance: 1880, sqft: { under2k: 278000, '2k-3k': 342000, '3k-4k': 448000, '4kplus': 625000 } },
+            'Mississippi': { rent: 1055, homePrice: 195000, taxRate: 0.81, insurance: 2280, sqft: { under2k: 142000, '2k-3k': 175000, '3k-4k': 238000, '4kplus': 342000 } },
+            'Missouri': { rent: 1185, homePrice: 258000, taxRate: 0.97, insurance: 1780, sqft: { under2k: 184000, '2k-3k': 238000, '3k-4k': 322000, '4kplus': 458000 } },
+            'Montana': { rent: 1335, homePrice: 475000, taxRate: 0.84, insurance: 1980, sqft: { under2k: 368000, '2k-3k': 452000, '3k-4k': 588000, '4kplus': 795000 } },
+            'Nebraska': { rent: 1175, homePrice: 278000, taxRate: 1.73, insurance: 3050, sqft: { under2k: 205000, '2k-3k': 258000, '3k-4k': 342000, '4kplus': 478000 } },
+            'Nevada': { rent: 1695, homePrice: 465000, taxRate: 0.60, insurance: 1450, sqft: { under2k: 358000, '2k-3k': 442000, '3k-4k': 588000, '4kplus': 815000 } },
+            'New Hampshire': { rent: 1825, homePrice: 512000, taxRate: 2.18, insurance: 1350, sqft: { under2k: 396000, '2k-3k': 492000, '3k-4k': 640000, '4kplus': 872000 } },
+            'New Jersey': { rent: 2385, homePrice: 532000, taxRate: 2.49, insurance: 1450, sqft: { under2k: 416000, '2k-3k': 512000, '3k-4k': 670000, '4kplus': 942000 } },
+            'New Mexico': { rent: 1275, homePrice: 332000, taxRate: 0.80, insurance: 1680, sqft: { under2k: 248000, '2k-3k': 312000, '3k-4k': 418000, '4kplus': 575000 } },
+            'New York': { rent: 2545, homePrice: 458000, taxRate: 1.72, insurance: 1680, sqft: { under2k: 354000, '2k-3k': 438000, '3k-4k': 575000, '4kplus': 828000 } },
+            'North Carolina': { rent: 1512, homePrice: 365000, taxRate: 0.84, insurance: 1780, sqft: { under2k: 280000, '2k-3k': 345000, '3k-4k': 460000, '4kplus': 650000 } },
+            'North Dakota': { rent: 1098, homePrice: 268000, taxRate: 0.98, insurance: 1980, sqft: { under2k: 195000, '2k-3k': 248000, '3k-4k': 332000, '4kplus': 468000 } },
+            'Ohio': { rent: 1218, homePrice: 238000, taxRate: 1.56, insurance: 1250, sqft: { under2k: 174000, '2k-3k': 218000, '3k-4k': 292000, '4kplus': 418000 } },
+            'Oklahoma': { rent: 1078, homePrice: 218000, taxRate: 0.90, insurance: 3180, sqft: { under2k: 154000, '2k-3k': 198000, '3k-4k': 272000, '4kplus': 388000 } },
+            'Oregon': { rent: 1735, homePrice: 522000, taxRate: 0.97, insurance: 1250, sqft: { under2k: 408000, '2k-3k': 502000, '3k-4k': 658000, '4kplus': 918000 } },
+            'Pennsylvania': { rent: 1415, homePrice: 302000, taxRate: 1.58, insurance: 1250, sqft: { under2k: 228000, '2k-3k': 282000, '3k-4k': 378000, '4kplus': 535000 } },
+            'Rhode Island': { rent: 1745, homePrice: 472000, taxRate: 1.63, insurance: 1980, sqft: { under2k: 365000, '2k-3k': 450000, '3k-4k': 588000, '4kplus': 808000 } },
+            'South Carolina': { rent: 1435, homePrice: 335000, taxRate: 0.57, insurance: 2120, sqft: { under2k: 250000, '2k-3k': 315000, '3k-4k': 420000, '4kplus': 600000 } },
+            'South Dakota': { rent: 1045, homePrice: 322000, taxRate: 1.31, insurance: 2420, sqft: { under2k: 238000, '2k-3k': 302000, '3k-4k': 398000, '4kplus': 555000 } },
+            'Tennessee': { rent: 1512, homePrice: 375000, taxRate: 0.71, insurance: 2120, sqft: { under2k: 280000, '2k-3k': 355000, '3k-4k': 472000, '4kplus': 662000 } },
+            'Texas': { rent: 1585, homePrice: 355000, taxRate: 1.80, insurance: 2850, sqft: { under2k: 268000, '2k-3k': 332000, '3k-4k': 448000, '4kplus': 648000 } },
+            'Utah': { rent: 1625, homePrice: 548000, taxRate: 0.57, insurance: 1250, sqft: { under2k: 424000, '2k-3k': 518000, '3k-4k': 686000, '4kplus': 968000 } },
+            'Vermont': { rent: 1595, homePrice: 418000, taxRate: 1.90, insurance: 1150, sqft: { under2k: 322000, '2k-3k': 398000, '3k-4k': 515000, '4kplus': 705000 } },
+            'Virginia': { rent: 1745, homePrice: 428000, taxRate: 0.82, insurance: 1450, sqft: { under2k: 322000, '2k-3k': 408000, '3k-4k': 535000, '4kplus': 758000 } },
+            'Washington': { rent: 1935, homePrice: 628000, taxRate: 0.98, insurance: 1350, sqft: { under2k: 492000, '2k-3k': 608000, '3k-4k': 795000, '4kplus': 1128000 } },
+            'West Virginia': { rent: 985, homePrice: 175000, taxRate: 0.58, insurance: 1250, sqft: { under2k: 122000, '2k-3k': 155000, '3k-4k': 218000, '4kplus': 315000 } },
+            'Wisconsin': { rent: 1275, homePrice: 312000, taxRate: 1.85, insurance: 1150, sqft: { under2k: 238000, '2k-3k': 292000, '3k-4k': 388000, '4kplus': 545000 } },
+            'Wyoming': { rent: 1158, homePrice: 358000, taxRate: 0.61, insurance: 1680, sqft: { under2k: 268000, '2k-3k': 332000, '3k-4k': 448000, '4kplus': 628000 } }
+        };
+
+        // Dwelling Type Data (price multipliers, HOA, and characteristics)
+        const dwellingData = {
+            sfh: {
+                name: 'Single Family Home',
+                priceMultiplier: 1.0,
+                rentMultiplier: 1.0,
+                avgHoa: 0,
+                insuranceMultiplier: 1.0,
+                description: 'Detached single-family residence',
+                avgSqft: '1,800 - 2,400',
+                appreciation: '5.2%'
+            },
+            townhome: {
+                name: 'Townhome',
+                priceMultiplier: 0.78,
+                rentMultiplier: 0.88,
+                avgHoa: 250,
+                insuranceMultiplier: 0.85,
+                description: 'Attached multi-level home',
+                avgSqft: '1,400 - 2,000',
+                appreciation: '4.8%'
+            },
+            condo: {
+                name: 'Condominium',
+                priceMultiplier: 0.65,
+                rentMultiplier: 0.82,
+                avgHoa: 450,
+                insuranceMultiplier: 0.45,
+                description: 'Unit in larger building, HOA covers exterior',
+                avgSqft: '900 - 1,500',
+                appreciation: '4.1%'
+            },
+            coop: {
+                name: 'Co-op',
+                priceMultiplier: 0.58,
+                rentMultiplier: 0.78,
+                avgHoa: 650,
+                insuranceMultiplier: 0.40,
+                description: 'Cooperative ownership, share-based',
+                avgSqft: '800 - 1,400',
+                appreciation: '3.5%',
+                notes: 'Maintenance fee instead of HOA, board approval required'
+            }
+        };
+
+        let currentDwellingType = 'sfh';
+
+        // Update home price based on state and square footage selection
+        function updatePriceFromSqft() {
+            const state = document.getElementById('stateSelectMortgage').value;
+            const sqftRange = document.getElementById('sqftSelect').value;
+
+            if (state && sqftRange !== '0') {
+                const data = stateData[state];
+                let price;
+                switch(sqftRange) {
+                    case '1500': price = data.sqft.under2k; break;
+                    case '2500': price = data.sqft['2k-3k']; break;
+                    case '3500': price = data.sqft['3k-4k']; break;
+                    case '4500': price = data.sqft['4kplus']; break;
+                    default: return;
+                }
+                document.getElementById('homePrice').value = price;
+            }
+        }
+
+        // Update defaults when state is selected
+        function updateStateDefaults() {
+            const state = document.getElementById('stateSelectMortgage').value;
+            if (!state) {
+                document.getElementById('stateMedianCard').style.display = 'none';
+                document.getElementById('stateSqftBreakdown').style.display = 'none';
+                return;
+            }
+
+            const data = stateData[state];
+            const dwelling = dwellingData[currentDwellingType];
+
+            // Apply dwelling type multipliers
+            const adjustedPrice = Math.round(data.homePrice * dwelling.priceMultiplier);
+            const adjustedInsurance = Math.round(data.insurance * dwelling.insuranceMultiplier);
+
+            document.getElementById('propertyTax').value = data.taxRate;
+            document.getElementById('propertyInsurance').value = adjustedInsurance;
+            document.getElementById('homePrice').value = adjustedPrice;
+
+            // Set HOA based on dwelling type
+            const hoaField = document.getElementById('hoa');
+            if (hoaField) {
+                hoaField.value = dwelling.avgHoa;
+            }
+
+            // Show state median price card
+            const baseNationalPrice = 428000 * dwelling.priceMultiplier;
+            const priceDiff = ((adjustedPrice - baseNationalPrice) / baseNationalPrice * 100).toFixed(1);
+            document.getElementById('stateMedianCard').style.display = 'block';
+            document.getElementById('stateMedianLabel').textContent = state + ' ' + dwelling.name;
+            document.getElementById('stateMedianPrice').textContent = formatCurrency(adjustedPrice);
+            document.getElementById('stateMedianCompare').textContent = `${priceDiff >= 0 ? '+' : ''}${priceDiff}% vs national`;
+            document.getElementById('stateMedianCompare').style.color = priceDiff >= 0 ? '#ef4444' : '#10b981';
+
+            // Show sq ft breakdown with dwelling multiplier
+            document.getElementById('stateSqftBreakdown').style.display = 'block';
+            document.getElementById('sqftBreakdownTitle').textContent = state + ' - ' + dwelling.name + ' Prices by Size';
+            document.getElementById('mortgageSqftUnder2k').textContent = formatCurrency(Math.round(data.sqft.under2k * dwelling.priceMultiplier));
+            document.getElementById('mortgageSqft2k3k').textContent = formatCurrency(Math.round(data.sqft['2k-3k'] * dwelling.priceMultiplier));
+            document.getElementById('mortgageSqft3k4k').textContent = formatCurrency(Math.round(data.sqft['3k-4k'] * dwelling.priceMultiplier));
+            document.getElementById('mortgageSqft4kplus').textContent = formatCurrency(Math.round(data.sqft['4kplus'] * dwelling.priceMultiplier));
+        }
+
+        // Populate state dropdown in mortgage section
+        function populateMortgageStateDropdown() {
+            const select = document.getElementById('stateSelectMortgage');
+            Object.keys(stateData).sort().forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                select.appendChild(option);
+            });
+        }
+
+        // Populate state dropdown in Buy vs Rent section
+        function populateBuyRentStateDropdown() {
+            const select = document.getElementById('bvStateSelect');
+            Object.keys(stateData).sort().forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                select.appendChild(option);
+            });
+        }
+
+        // Update Buy vs Rent section when state is selected
+        function updateBuyRentStateDefaults() {
+            const state = document.getElementById('bvStateSelect').value;
+            if (!state) {
+                document.getElementById('bvStateMarketData').style.display = 'none';
+                return;
+            }
+
+            const data = stateData[state];
+            const dwelling = dwellingData[currentDwellingType];
+
+            // Apply dwelling type multipliers (only for single family property type)
+            const priceMultiplier = currentPropertyType === 'single-family' ? dwelling.priceMultiplier : 1;
+            const rentMultiplier = currentPropertyType === 'single-family' ? dwelling.rentMultiplier : 1;
+            const insuranceMultiplier = currentPropertyType === 'single-family' ? dwelling.insuranceMultiplier : 1;
+
+            const adjustedPrice = Math.round(data.homePrice * priceMultiplier);
+            const adjustedRent = Math.round(data.rent * rentMultiplier);
+            const adjustedInsurance = Math.round(data.insurance * insuranceMultiplier);
+
+            // Show market data panel
+            document.getElementById('bvStateMarketData').style.display = 'block';
+
+            // Update display values
+            document.getElementById('bvStateMedian').textContent = formatCurrency(adjustedPrice);
+            document.getElementById('bvStateRent').textContent = formatCurrency(adjustedRent);
+            document.getElementById('bvStateTax').textContent = data.taxRate.toFixed(2) + '%';
+            document.getElementById('bvStateInsurance').textContent = formatCurrency(adjustedInsurance);
+
+            // Update sq ft breakdown
+            const dwellingLabel = currentPropertyType === 'single-family' ? dwelling.name : 'Home';
+            document.getElementById('bvSqftTitle').textContent = state + ' - ' + dwellingLabel + ' Prices by Size';
+            document.getElementById('bvSqftUnder2k').textContent = formatCurrency(Math.round(data.sqft.under2k * priceMultiplier));
+            document.getElementById('bvSqft2k3k').textContent = formatCurrency(Math.round(data.sqft['2k-3k'] * priceMultiplier));
+            document.getElementById('bvSqft3k4k').textContent = formatCurrency(Math.round(data.sqft['3k-4k'] * priceMultiplier));
+            document.getElementById('bvSqft4kplus').textContent = formatCurrency(Math.round(data.sqft['4kplus'] * priceMultiplier));
+
+            // Auto-fill form inputs
+            document.getElementById('bvHomePrice').value = adjustedPrice;
+            document.getElementById('bvMonthlyRent').value = adjustedRent;
+            document.getElementById('bvPropertyTax').value = data.taxRate;
+        }
+
+        // National averages (2024-2025)
+        const nationalRent = 2050;
+        const nationalHomePrice = 428000;
+        const nationalTaxRate = 1.1;
+        const nationalInsurance = 1950;
+
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.section).classList.add('active');
+            });
+        });
+
+        // Populate state dropdown and grid
+        function populateStates() {
+            const select = document.getElementById('stateSelect');
+            const grid = document.getElementById('stateGrid');
+
+            Object.keys(stateData).sort().forEach(state => {
+                // Dropdown
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                select.appendChild(option);
+
+                // Grid
+                const div = document.createElement('div');
+                div.className = 'state-item';
+                div.innerHTML = `
+                    <div class="state-name">${state}</div>
+                    <div class="state-rent">$${stateData[state].rent.toLocaleString()}/mo</div>
+                `;
+                div.onclick = () => {
+                    select.value = state;
+                    showStateDetails();
+                    document.querySelectorAll('.state-item').forEach(i => i.classList.remove('selected'));
+                    div.classList.add('selected');
+                };
+                grid.appendChild(div);
+            });
+        }
+
+        // Format currency
+        function formatCurrency(num) {
+            return '$' + Math.round(num).toLocaleString();
+        }
+
+        // Calculate monthly payment
+        function calculateMonthlyPayment(principal, annualRate, years) {
+            const monthlyRate = annualRate / 100 / 12;
+            const numPayments = years * 12;
+            if (monthlyRate === 0) return principal / numPayments;
+            return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        // Calculate PMI (estimated)
+        function calculatePMI(loanAmount, homeValue, downPaymentPercent) {
+            if (downPaymentPercent >= 20) return 0;
+            // PMI typically ranges from 0.5% to 1.5% of loan amount annually
+            // Lower down payment = higher PMI rate
+            let pmiRate;
+            if (downPaymentPercent < 5) pmiRate = 1.5;
+            else if (downPaymentPercent < 10) pmiRate = 1.0;
+            else if (downPaymentPercent < 15) pmiRate = 0.7;
+            else pmiRate = 0.5;
+
+            return (loanAmount * (pmiRate / 100)) / 12;
+        }
+
+        // Mortgage Comparison Calculator
+        function calculateMortgage() {
+            const homePrice = parseFloat(document.getElementById('homePrice').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const loanTerm = parseInt(document.getElementById('loanTerm').value);
+            const propertyTax = parseFloat(document.getElementById('propertyTax').value);
+
+            // Determine down payment options based on property type
+            let downPayments;
+            let showCashFlow = false;
+            let monthlyRentalIncome = 0;
+            let annualNOI = 0;
+
+            switch(currentPropertyType) {
+                case 'single-family':
+                    downPayments = [5, 10, 20];
+                    break;
+                case 'multi-family':
+                    const numUnits = parseInt(document.getElementById('numUnits').value);
+                    const rentPerUnit = parseFloat(document.getElementById('rentPerUnit').value);
+                    const occupancyRate = parseFloat(document.getElementById('occupancyRate').value) / 100;
+                    const ownerOccupied = document.getElementById('ownerOccupied').value === 'yes';
+
+                    // Calculate rental income (if owner-occupied, exclude 1 unit)
+                    const rentingUnits = ownerOccupied ? numUnits - 1 : numUnits;
+                    monthlyRentalIncome = rentPerUnit * rentingUnits * occupancyRate;
+                    showCashFlow = true;
+
+                    // Different down payment requirements
+                    downPayments = ownerOccupied ? [3.5, 10, 20] : [15, 20, 25];
+                    break;
+                case 'commercial':
+                    annualNOI = parseFloat(document.getElementById('annualNOI').value);
+                    downPayments = [20, 25, 35];
+                    showCashFlow = true;
+                    break;
+            }
+
+            const results = [];
+
+            // Get insurance and HOA inputs
+            const annualInsurance = parseFloat(document.getElementById('propertyInsurance').value) || 1800;
+            const monthlyHOA = parseFloat(document.getElementById('hoaFees').value) || 0;
+
+            downPayments.forEach(dp => {
+                const downAmount = homePrice * (dp / 100);
+                const loanAmount = homePrice - downAmount;
+                const rate = currentPropertyType === 'commercial' ?
+                    parseFloat(document.getElementById('commercialRate').value) : interestRate;
+                const monthlyPI = calculateMonthlyPayment(loanAmount, rate, loanTerm);
+                const monthlyTax = (homePrice * (propertyTax / 100)) / 12;
+                const monthlyInsurance = annualInsurance / 12;
+
+                // PMI only for residential under 20%
+                const monthlyPMI = currentPropertyType !== 'commercial' ?
+                    calculatePMI(loanAmount, homePrice, dp) : 0;
+
+                const totalMonthly = monthlyPI + monthlyTax + monthlyInsurance + monthlyPMI + monthlyHOA;
+                const totalInterest = (monthlyPI * loanTerm * 12) - loanAmount;
+
+                // Calculate cash flow for multi-family and commercial
+                let monthlyCashFlow = 0;
+                let annualCashFlow = 0;
+                let cashOnCashReturn = 0;
+                let dscr = 0;
+                let capRate = 0;
+
+                if (currentPropertyType === 'multi-family') {
+                    // Estimate operating expenses at 35% of gross rent
+                    const grossRent = monthlyRentalIncome;
+                    const operatingExpenses = grossRent * 0.35;
+                    const noi = grossRent - operatingExpenses;
+                    monthlyCashFlow = noi - totalMonthly;
+                    annualCashFlow = monthlyCashFlow * 12;
+                    cashOnCashReturn = (annualCashFlow / downAmount) * 100;
+                    dscr = (noi * 12) / (monthlyPI * 12);
+                    capRate = ((grossRent * 12 - operatingExpenses * 12) / homePrice) * 100;
+                } else if (currentPropertyType === 'commercial') {
+                    monthlyCashFlow = (annualNOI / 12) - totalMonthly;
+                    annualCashFlow = monthlyCashFlow * 12;
+                    cashOnCashReturn = (annualCashFlow / downAmount) * 100;
+                    dscr = annualNOI / (monthlyPI * 12);
+                    capRate = (annualNOI / homePrice) * 100;
+                }
+
+                results.push({
+                    downPercent: dp,
+                    downAmount,
+                    loanAmount,
+                    monthlyPI,
+                    monthlyTax,
+                    monthlyInsurance,
+                    monthlyPMI,
+                    monthlyHOA,
+                    totalMonthly,
+                    totalInterest,
+                    totalCost: (totalMonthly * loanTerm * 12) + downAmount,
+                    monthlyCashFlow,
+                    annualCashFlow,
+                    cashOnCashReturn,
+                    dscr,
+                    capRate
+                });
+            });
+
+            // Display results
+            const resultsDiv = document.getElementById('mortgageResults');
+            resultsDiv.style.display = 'grid';
+
+            if (currentPropertyType === 'single-family') {
+                resultsDiv.innerHTML = results.map((r, i) => `
+                    <div class="result-card down-${r.downPercent}">
+                        <h4>${r.downPercent}% Down Payment</h4>
+                        <div class="amount">${formatCurrency(r.totalMonthly)}/mo</div>
+                        <div class="detail">
+                            Down: ${formatCurrency(r.downAmount)}<br>
+                            <span class="pmi-badge ${r.monthlyPMI > 0 ? 'has-pmi' : 'no-pmi'}">
+                                ${r.monthlyPMI > 0 ? 'PMI: ' + formatCurrency(r.monthlyPMI) + '/mo' : 'No PMI'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            } else if (currentPropertyType === 'multi-family') {
+                resultsDiv.innerHTML = results.map((r, i) => `
+                    <div class="result-card ${r.monthlyCashFlow >= 0 ? 'highlight' : ''}" style="border-left: 4px solid ${r.monthlyCashFlow >= 0 ? '#10b981' : '#ef4444'};">
+                        <h4>${r.downPercent}% Down</h4>
+                        <div class="amount">${formatCurrency(r.totalMonthly)}/mo</div>
+                        <div class="detail" style="margin-top: 0.5rem;">
+                            Down: ${formatCurrency(r.downAmount)}<br>
+                            <strong style="color: ${r.monthlyCashFlow >= 0 ? '#10b981' : '#ef4444'}">
+                                Cash Flow: ${formatCurrency(r.monthlyCashFlow)}/mo
+                            </strong><br>
+                            CoC Return: ${r.cashOnCashReturn.toFixed(1)}%<br>
+                            DSCR: ${r.dscr.toFixed(2)}x
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                resultsDiv.innerHTML = results.map((r, i) => `
+                    <div class="result-card ${r.dscr >= 1.25 ? 'highlight' : ''}" style="border-left: 4px solid ${r.dscr >= 1.25 ? '#10b981' : r.dscr >= 1 ? '#f59e0b' : '#ef4444'};">
+                        <h4>${r.downPercent}% Down</h4>
+                        <div class="amount">${formatCurrency(r.totalMonthly)}/mo</div>
+                        <div class="detail" style="margin-top: 0.5rem;">
+                            Down: ${formatCurrency(r.downAmount)}<br>
+                            <strong style="color: ${r.monthlyCashFlow >= 0 ? '#10b981' : '#ef4444'}">
+                                Cash Flow: ${formatCurrency(r.monthlyCashFlow)}/mo
+                            </strong><br>
+                            Cap Rate: ${r.capRate.toFixed(1)}%<br>
+                            DSCR: <span style="color: ${r.dscr >= 1.25 ? '#10b981' : r.dscr >= 1 ? '#f59e0b' : '#ef4444'}">${r.dscr.toFixed(2)}x</span><br>
+                            CoC: ${r.cashOnCashReturn.toFixed(1)}%
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Display comparison table
+            const tableDiv = document.getElementById('mortgageTable');
+            tableDiv.style.display = 'block';
+
+            // Update table header
+            const thead = document.getElementById('comparisonHead');
+            thead.innerHTML = `<tr><th>Metric</th>${results.map(r => `<th>${r.downPercent}% Down</th>`).join('')}</tr>`;
+
+            const tbody = document.getElementById('comparisonBody');
+            let tableHTML = `
+                <tr>
+                    <td><strong>Down Payment</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.downAmount)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Loan Amount</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.loanAmount)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Principal & Interest</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.monthlyPI)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Property Tax</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.monthlyTax)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Insurance</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.monthlyInsurance)}</td>`).join('')}
+                </tr>`;
+
+            if (currentPropertyType === 'single-family') {
+                tableHTML += `
+                <tr>
+                    <td><strong>PMI</strong></td>
+                    ${results.map(r => `<td>${r.monthlyPMI > 0 ? formatCurrency(r.monthlyPMI) : '-'}</td>`).join('')}
+                </tr>`;
+            }
+
+            if (results[0].monthlyHOA > 0) {
+                tableHTML += `
+                <tr>
+                    <td><strong>HOA Fees</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.monthlyHOA)}</td>`).join('')}
+                </tr>`;
+            }
+
+            tableHTML += `
+                <tr style="background: #eff6ff;">
+                    <td><strong>Total Monthly Payment</strong></td>
+                    ${results.map(r => `<td><strong>${formatCurrency(r.totalMonthly)}</strong></td>`).join('')}
+                </tr>`;
+
+            if (showCashFlow) {
+                tableHTML += `
+                <tr style="background: ${results[0].monthlyCashFlow >= 0 ? '#d1fae5' : '#fee2e2'};">
+                    <td><strong>Monthly Cash Flow</strong></td>
+                    ${results.map(r => `<td style="color: ${r.monthlyCashFlow >= 0 ? '#10b981' : '#ef4444'}"><strong>${formatCurrency(r.monthlyCashFlow)}</strong></td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Annual Cash Flow</strong></td>
+                    ${results.map(r => `<td style="color: ${r.annualCashFlow >= 0 ? '#10b981' : '#ef4444'}">${formatCurrency(r.annualCashFlow)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Cash-on-Cash Return</strong></td>
+                    ${results.map(r => `<td>${r.cashOnCashReturn.toFixed(1)}%</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>DSCR</strong></td>
+                    ${results.map(r => `<td style="color: ${r.dscr >= 1.25 ? '#10b981' : r.dscr >= 1 ? '#f59e0b' : '#ef4444'}">${r.dscr.toFixed(2)}x</td>`).join('')}
+                </tr>`;
+
+                if (currentPropertyType === 'commercial') {
+                    tableHTML += `
+                <tr>
+                    <td><strong>Cap Rate</strong></td>
+                    ${results.map(r => `<td>${r.capRate.toFixed(1)}%</td>`).join('')}
+                </tr>`;
+                }
+            }
+
+            tableHTML += `
+                <tr>
+                    <td><strong>Total Interest (${loanTerm} yrs)</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.totalInterest)}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td><strong>Total Cost</strong></td>
+                    ${results.map(r => `<td>${formatCurrency(r.totalCost)}</td>`).join('')}
+                </tr>
+            `;
+
+            tbody.innerHTML = tableHTML;
+        }
+
+        // Credit Score Calculator
+        const creditSlider = document.getElementById('creditSlider');
+        creditSlider.addEventListener('input', updateCreditDisplay);
+
+        function getCreditRating(score) {
+            if (score >= 760) return { rating: 'Excellent', color: '#10b981', rateAdj: 0 };
+            if (score >= 700) return { rating: 'Good', color: '#22c55e', rateAdj: 0.375 };
+            if (score >= 660) return { rating: 'Fair', color: '#eab308', rateAdj: 0.75 };
+            if (score >= 620) return { rating: 'Below Average', color: '#f59e0b', rateAdj: 1.25 };
+            if (score >= 580) return { rating: 'Poor', color: '#ef4444', rateAdj: 2.0 };
+            return { rating: 'Very Poor', color: '#dc2626', rateAdj: 3.0 };
+        }
+
+        function updateCreditDisplay() {
+            const score = parseInt(creditSlider.value);
+            const { rating, color, rateAdj } = getCreditRating(score);
+            const baseRate = 6.0; // Base rate for excellent credit
+            const estimatedRate = baseRate + rateAdj;
+
+            document.getElementById('creditScoreDisplay').textContent = score;
+            document.getElementById('creditScoreDisplay').style.color = color;
+            document.getElementById('creditRating').textContent = rating;
+            document.getElementById('creditRating').style.color = color;
+            document.getElementById('rateEstimate').textContent = `Estimated Rate: ${estimatedRate.toFixed(2)}%`;
+
+            // Calculate impact on payments
+            const homePrice = 400000;
+            const downPayment = 0.10;
+            const loanAmount = homePrice * (1 - downPayment);
+
+            const excellentPayment = calculateMonthlyPayment(loanAmount, 6.0, 30);
+            const yourPayment = calculateMonthlyPayment(loanAmount, estimatedRate, 30);
+            const difference = yourPayment - excellentPayment;
+            const lifetimeDiff = difference * 360;
+
+            const resultsDiv = document.getElementById('creditImpactResults');
+            resultsDiv.innerHTML = `
+                <div class="result-card">
+                    <h4>Your Estimated Payment</h4>
+                    <div class="amount">${formatCurrency(yourPayment)}/mo</div>
+                    <div class="detail">At ${estimatedRate.toFixed(2)}% rate</div>
+                </div>
+                <div class="result-card">
+                    <h4>Excellent Credit Payment</h4>
+                    <div class="amount">${formatCurrency(excellentPayment)}/mo</div>
+                    <div class="detail">At 6.00% rate</div>
+                </div>
+                <div class="result-card">
+                    <h4>Monthly Difference</h4>
+                    <div class="amount" style="color: ${difference > 0 ? '#ef4444' : '#10b981'}">
+                        ${difference > 0 ? '+' : ''}${formatCurrency(difference)}
+                    </div>
+                    <div class="detail">${difference > 0 ? 'Extra cost per month' : 'You have great credit!'}</div>
+                </div>
+                <div class="result-card">
+                    <h4>30-Year Difference</h4>
+                    <div class="amount" style="color: ${lifetimeDiff > 0 ? '#ef4444' : '#10b981'}">
+                        ${lifetimeDiff > 0 ? '+' : ''}${formatCurrency(lifetimeDiff)}
+                    </div>
+                    <div class="detail">${lifetimeDiff > 0 ? 'Total extra over loan life' : 'Great savings!'}</div>
+                </div>
+            `;
+        }
+
+        // State Details
+        function showStateDetails() {
+            const state = document.getElementById('stateSelect').value;
+            if (!state) return;
+
+            const data = stateData[state];
+            const details = document.getElementById('stateDetails');
+            details.style.display = 'block';
+
+            const nationalInsurance = 1800;
+            const rentDiff = ((data.rent - nationalRent) / nationalRent * 100).toFixed(1);
+            const priceDiff = ((data.homePrice - nationalHomePrice) / nationalHomePrice * 100).toFixed(1);
+            const taxDiff = (data.taxRate - nationalTaxRate).toFixed(2);
+            const insuranceDiff = ((data.insurance - nationalInsurance) / nationalInsurance * 100).toFixed(0);
+
+            document.getElementById('stateRent').textContent = formatCurrency(data.rent);
+            document.getElementById('stateRentCompare').textContent =
+                `${rentDiff >= 0 ? '+' : ''}${rentDiff}% vs national avg`;
+            document.getElementById('stateRentCompare').style.color = rentDiff >= 0 ? '#ef4444' : '#10b981';
+
+            document.getElementById('stateHomePrice').textContent = formatCurrency(data.homePrice);
+            document.getElementById('stateHomePriceCompare').textContent =
+                `${priceDiff >= 0 ? '+' : ''}${priceDiff}% vs national avg`;
+            document.getElementById('stateHomePriceCompare').style.color = priceDiff >= 0 ? '#ef4444' : '#10b981';
+
+            document.getElementById('stateTaxRate').textContent = data.taxRate.toFixed(2) + '%';
+            document.getElementById('stateTaxCompare').textContent =
+                `${taxDiff >= 0 ? '+' : ''}${taxDiff}% vs national avg`;
+            document.getElementById('stateTaxCompare').style.color = taxDiff >= 0 ? '#ef4444' : '#10b981';
+
+            document.getElementById('stateInsurance').textContent = formatCurrency(data.insurance);
+            document.getElementById('stateInsuranceCompare').textContent =
+                `${insuranceDiff >= 0 ? '+' : ''}${insuranceDiff}% vs national avg`;
+            document.getElementById('stateInsuranceCompare').style.color = insuranceDiff >= 0 ? '#ef4444' : '#10b981';
+
+            // Square footage breakdown
+            document.getElementById('sqftUnder2k').textContent = formatCurrency(data.sqft.under2k);
+            document.getElementById('sqft2k3k').textContent = formatCurrency(data.sqft['2k-3k']);
+            document.getElementById('sqft3k4k').textContent = formatCurrency(data.sqft['3k-4k']);
+            document.getElementById('sqft4kplus').textContent = formatCurrency(data.sqft['4kplus']);
+        }
+
+        // Buy vs Rent Breakeven
+        function calculateBreakeven() {
+            const homePrice = parseFloat(document.getElementById('bvHomePrice').value);
+            const downPaymentPct = parseFloat(document.getElementById('bvDownPayment').value) / 100;
+            const interestRate = parseFloat(document.getElementById('bvInterestRate').value);
+            const monthlyRent = parseFloat(document.getElementById('bvMonthlyRent').value);
+            const appreciation = parseFloat(document.getElementById('bvAppreciation').value) / 100;
+            const rentIncrease = parseFloat(document.getElementById('bvRentIncrease').value) / 100;
+            const propertyTax = parseFloat(document.getElementById('bvPropertyTax').value) / 100;
+            const closingCostsPct = parseFloat(document.getElementById('bvClosingCosts').value) / 100;
+
+            const downPayment = homePrice * downPaymentPct;
+            const closingCosts = homePrice * closingCostsPct;
+            const loanAmount = homePrice - downPayment;
+            const monthlyPI = calculateMonthlyPayment(loanAmount, interestRate, 30);
+            const monthlyTax = (homePrice * propertyTax) / 12;
+            const monthlyInsurance = homePrice * 0.003 / 12;
+            const monthlyPMI = calculatePMI(loanAmount, homePrice, downPaymentPct * 100);
+            const monthlyBuyCost = monthlyPI + monthlyTax + monthlyInsurance + monthlyPMI;
+
+            // Calculate year by year
+            const years = [];
+            let totalRentPaid = 0;
+            let totalBuyCosts = downPayment + closingCosts;
+            let currentHomeValue = homePrice;
+            let remainingLoan = loanAmount;
+            let currentRent = monthlyRent;
+            let breakevenYear = null;
+
+            const monthlyRate = interestRate / 100 / 12;
+
+            for (let year = 1; year <= 10; year++) {
+                // Rent costs for the year
+                const yearRent = currentRent * 12;
+                totalRentPaid += yearRent;
+                currentRent *= (1 + rentIncrease);
+
+                // Buy costs for the year (simplified - using year 1 costs)
+                totalBuyCosts += monthlyBuyCost * 12;
+
+                // Home appreciation
+                currentHomeValue *= (1 + appreciation);
+
+                // Loan paydown (simplified calculation)
+                for (let month = 0; month < 12; month++) {
+                    const interestPayment = remainingLoan * monthlyRate;
+                    const principalPayment = monthlyPI - interestPayment;
+                    remainingLoan -= principalPayment;
+                }
+
+                const equity = currentHomeValue - remainingLoan;
+                const netPositionBuy = equity - totalBuyCosts;
+                const rentWealth = -totalRentPaid;
+
+                years.push({
+                    year,
+                    totalRentPaid,
+                    totalBuyCosts,
+                    homeValue: currentHomeValue,
+                    equity,
+                    netPositionBuy
+                });
+
+                if (!breakevenYear && netPositionBuy > rentWealth) {
+                    breakevenYear = year;
+                }
+            }
+
+            // Display results
+            document.getElementById('breakevenResults').style.display = 'block';
+            document.getElementById('breakevenYears').textContent =
+                breakevenYear ? `~${breakevenYear} years` : '10+ years';
+            document.getElementById('monthlyBuyCost').textContent = formatCurrency(monthlyBuyCost);
+            document.getElementById('totalRent5').textContent = formatCurrency(years[4].totalRentPaid);
+            document.getElementById('equityBuilt5').textContent = formatCurrency(years[4].equity);
+
+            // Breakeven marker
+            const markerPosition = breakevenYear ? Math.min((breakevenYear / 10) * 100, 100) : 100;
+            document.getElementById('breakevenMarker').style.left = markerPosition + '%';
+            document.getElementById('breakevenLabel').textContent =
+                breakevenYear ? `${breakevenYear} yrs` : '10+';
+
+            // Advice
+            let advice = '';
+            if (!breakevenYear || breakevenYear > 7) {
+                advice = 'With these numbers, renting may be more economical unless you plan to stay 7+ years. Consider if you value stability and building equity over flexibility.';
+            } else if (breakevenYear > 4) {
+                advice = 'Buying breaks even in a reasonable timeframe. If you plan to stay at least ' + breakevenYear + ' years, buying could be a good investment.';
+            } else {
+                advice = 'Buying appears financially advantageous relatively quickly. The local market seems to favor ownership.';
+            }
+            document.getElementById('breakevenAdvice').textContent = advice;
+
+            // Table
+            const tbody = document.getElementById('breakevenTable');
+            tbody.innerHTML = years.map(y => `
+                <tr ${y.year === breakevenYear ? 'style="background: #d1fae5;"' : ''}>
+                    <td><strong>Year ${y.year}</strong></td>
+                    <td>${formatCurrency(y.totalRentPaid)}</td>
+                    <td>${formatCurrency(y.totalBuyCosts)}</td>
+                    <td>${formatCurrency(y.equity)}</td>
+                    <td style="color: ${y.netPositionBuy >= 0 ? '#10b981' : '#ef4444'}">
+                        ${formatCurrency(y.netPositionBuy)}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Affordability Calculator
+        function calculateAffordability() {
+            const annualIncome = parseFloat(document.getElementById('annualIncome').value);
+            const monthlyDebts = parseFloat(document.getElementById('monthlyDebts').value);
+            const downPayment = parseFloat(document.getElementById('affDownPayment').value);
+            const interestRate = parseFloat(document.getElementById('affInterestRate').value);
+
+            const monthlyIncome = annualIncome / 12;
+            const maxHousingPayment = monthlyIncome * 0.28; // 28% front-end
+            const maxTotalDebt = monthlyIncome * 0.36; // 36% back-end
+            const maxHousingFromBackEnd = maxTotalDebt - monthlyDebts;
+
+            // Use the lower of the two limits
+            const maxMonthlyPayment = Math.min(maxHousingPayment, maxHousingFromBackEnd);
+
+            // Estimate max home price
+            // Payment = P&I + Tax + Insurance + PMI
+            // Assume tax = 1.1%, insurance = 0.3%, PMI = 0.7% if <20% down
+            const taxRate = 0.011;
+            const insuranceRate = 0.003;
+
+            // Iteratively find max home price
+            let maxHomePrice = 0;
+            for (let price = 100000; price <= 2000000; price += 10000) {
+                const dp = Math.min(downPayment, price * 0.5);
+                const dpPercent = (dp / price) * 100;
+                const loan = price - dp;
+                const monthlyPI = calculateMonthlyPayment(loan, interestRate, 30);
+                const monthlyTax = (price * taxRate) / 12;
+                const monthlyIns = (price * insuranceRate) / 12;
+                const monthlyPMI = dpPercent < 20 ? (loan * 0.007) / 12 : 0;
+                const total = monthlyPI + monthlyTax + monthlyIns + monthlyPMI;
+
+                if (total <= maxMonthlyPayment) {
+                    maxHomePrice = price;
+                } else {
+                    break;
+                }
+            }
+
+            // Calculate actual DTIs at max price
+            const actualDP = Math.min(downPayment, maxHomePrice * 0.5);
+            const actualDPPercent = (actualDP / maxHomePrice) * 100;
+            const actualLoan = maxHomePrice - actualDP;
+            const actualPI = calculateMonthlyPayment(actualLoan, interestRate, 30);
+            const actualTax = (maxHomePrice * taxRate) / 12;
+            const actualIns = (maxHomePrice * insuranceRate) / 12;
+            const actualPMI = actualDPPercent < 20 ? (actualLoan * 0.007) / 12 : 0;
+            const actualPayment = actualPI + actualTax + actualIns + actualPMI;
+
+            const frontEndDTI = (actualPayment / monthlyIncome) * 100;
+            const backEndDTI = ((actualPayment + monthlyDebts) / monthlyIncome) * 100;
+
+            // Display results
+            document.getElementById('affordabilityResults').style.display = 'block';
+            document.getElementById('maxHomePrice').textContent = formatCurrency(maxHomePrice);
+            document.getElementById('maxMonthlyPayment').textContent = formatCurrency(actualPayment);
+            document.getElementById('frontEndDTI').textContent = frontEndDTI.toFixed(1) + '%';
+            document.getElementById('backEndDTI').textContent = backEndDTI.toFixed(1) + '%';
+
+            // Meters
+            document.getElementById('frontEndPercent').textContent = frontEndDTI.toFixed(1) + '%';
+            const frontMeter = document.getElementById('frontEndMeter');
+            frontMeter.style.width = Math.min(frontEndDTI / 50 * 100, 100) + '%';
+            frontMeter.className = 'affordability-fill ' +
+                (frontEndDTI <= 28 ? 'safe' : frontEndDTI <= 35 ? 'caution' : 'danger');
+
+            document.getElementById('backEndPercent').textContent = backEndDTI.toFixed(1) + '%';
+            const backMeter = document.getElementById('backEndMeter');
+            backMeter.style.width = Math.min(backEndDTI / 50 * 100, 100) + '%';
+            backMeter.className = 'affordability-fill ' +
+                (backEndDTI <= 36 ? 'safe' : backEndDTI <= 43 ? 'caution' : 'danger');
+
+            // Rules of thumb
+            document.getElementById('rule3x').textContent = formatCurrency(annualIncome * 3);
+            document.getElementById('rule4x').textContent = formatCurrency(annualIncome * 4);
+            document.getElementById('rule5x').textContent = formatCurrency(annualIncome * 5);
+
+            // Scenarios table
+            const scenarios = [0.7, 0.85, 1, 1.15, 1.3].map(mult => {
+                const price = Math.round(maxHomePrice * mult / 10000) * 10000;
+                const dp = Math.min(downPayment, price * 0.5);
+                const dpPct = (dp / price) * 100;
+                const loan = price - dp;
+                const pi = calculateMonthlyPayment(loan, interestRate, 30);
+                const tax = (price * taxRate) / 12;
+                const ins = (price * insuranceRate) / 12;
+                const pmi = dpPct < 20 ? (loan * 0.007) / 12 : 0;
+                const payment = pi + tax + ins + pmi;
+                const frontDTI = (payment / monthlyIncome) * 100;
+                const backDTI = ((payment + monthlyDebts) / monthlyIncome) * 100;
+
+                let assessment, assessColor;
+                if (backDTI <= 36) {
+                    assessment = 'Comfortable';
+                    assessColor = '#10b981';
+                } else if (backDTI <= 43) {
+                    assessment = 'Stretched';
+                    assessColor = '#f59e0b';
+                } else {
+                    assessment = 'Risky';
+                    assessColor = '#ef4444';
+                }
+
+                return { price, payment, frontDTI, backDTI, assessment, assessColor };
+            });
+
+            document.getElementById('affordabilityTable').innerHTML = scenarios.map(s => `
+                <tr>
+                    <td>${formatCurrency(s.price)}</td>
+                    <td>${formatCurrency(s.payment)}</td>
+                    <td>${s.frontDTI.toFixed(1)}%</td>
+                    <td>${s.backDTI.toFixed(1)}%</td>
+                    <td style="color: ${s.assessColor}; font-weight: 600;">${s.assessment}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize
+        populateStates();
+        populateMortgageStateDropdown();
+        populateBuyRentStateDropdown();
+        updateCreditDisplay();
+
+        // Auto-detect state from IP and populate fields
+        async function autoDetectLocation() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                if (data.region) {
+                    const detectedState = data.region;
+
+                    // Check if state exists in our data
+                    if (stateData[detectedState]) {
+                        // Set state dropdown
+                        document.getElementById('stateSelectMortgage').value = detectedState;
+
+                        // Auto-populate fields based on state
+                        const stateInfo = stateData[detectedState];
+                        const dwelling = dwellingData[currentDwellingType];
+
+                        document.getElementById('propertyTax').value = stateInfo.taxRate;
+                        document.getElementById('propertyInsurance').value = Math.round(stateInfo.insurance * dwelling.insuranceMultiplier);
+                        document.getElementById('hoa').value = dwelling.avgHoa;
+                        document.getElementById('homePrice').value = Math.round(stateInfo.homePrice * dwelling.priceMultiplier);
+
+                        // Update state displays
+                        updateStateDefaults();
+                        updateDwellingInfoDisplay();
+
+                        // Also set Buy vs Rent state
+                        const bvStateSelect = document.getElementById('bvStateSelect');
+                        if (bvStateSelect) {
+                            bvStateSelect.value = detectedState;
+                            updateBuyRentStateDefaults();
+                        }
+
+                        console.log('Location detected:', detectedState);
+                    }
+                }
+            } catch (error) {
+                console.log('Could not detect location, using defaults');
+            }
+        }
+
+        // Run auto-detection on page load
+        autoDetectLocation();
+
+        // Email Results Function
+        function emailResults() {
+            const email = document.getElementById('exportEmail').value;
+
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Get current values
+            const homePrice = document.getElementById('homePrice').value;
+            const state = document.getElementById('stateSelectMortgage').value || 'Not selected';
+            const interestRate = document.getElementById('interestRate').value;
+            const loanTerm = document.getElementById('loanTerm').value;
+            const propertyType = currentPropertyType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const dwellingType = currentPropertyType === 'single-family' ? dwellingData[currentDwellingType].name : 'N/A';
+
+            // Get results from the table
+            const tableBody = document.getElementById('comparisonBody');
+            let resultsText = '';
+
+            if (tableBody && tableBody.rows.length > 0) {
+                const headers = document.getElementById('comparisonHead').rows[0];
+                let headerText = [];
+                for (let i = 0; i < headers.cells.length; i++) {
+                    headerText.push(headers.cells[i].textContent);
+                }
+
+                for (let row of tableBody.rows) {
+                    let rowText = row.cells[0].textContent + ': ';
+                    for (let i = 1; i < row.cells.length; i++) {
+                        rowText += headerText[i] + ' = ' + row.cells[i].textContent + ' | ';
+                    }
+                    resultsText += rowText + '\n';
+                }
+            }
+
+            const subject = `BuyRentTool - Mortgage Comparison for $${parseInt(homePrice).toLocaleString()} Home`;
+
+            const body = `BUYRENTTOOL - MORTGAGE COMPARISON RESULTS
+==========================================
+
+PROPERTY DETAILS:
+- Home Price: $${parseInt(homePrice).toLocaleString()}
+- State: ${state}
+- Property Type: ${propertyType}
+- Dwelling Type: ${dwellingType}
+- Interest Rate: ${interestRate}%
+- Loan Term: ${loanTerm} years
+
+COMPARISON RESULTS:
+${resultsText}
+
+==========================================
+Thank you for using BuyRentTool!
+Visit us: https://buyersmath.com
+==========================================`;
+
+            // Open email client
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+        }
+
+        // Download PDF Function
+        function downloadPDF() {
+            // Get current values
+            const homePrice = document.getElementById('homePrice').value;
+            const state = document.getElementById('stateSelectMortgage').value || 'Not selected';
+            const interestRate = document.getElementById('interestRate').value;
+            const loanTerm = document.getElementById('loanTerm').value;
+            const propertyType = currentPropertyType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const dwellingType = currentPropertyType === 'single-family' ? dwellingData[currentDwellingType].name : 'N/A';
+
+            // Get results from the table
+            const tableBody = document.getElementById('comparisonBody');
+            const tableHead = document.getElementById('comparisonHead');
+
+            let tableHTML = '';
+            if (tableBody && tableBody.rows.length > 0) {
+                tableHTML = `<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <thead style="background: #1877F2; color: white;">
+                        ${tableHead.innerHTML}
+                    </thead>
+                    <tbody>
+                        ${tableBody.innerHTML}
+                    </tbody>
+                </table>`;
+            }
+
+            // Create PDF content
+            const pdfContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>BuyRentTool - Mortgage Comparison</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 40px; color: #1c1e21; }
+                        h1 { color: #1877F2; margin-bottom: 5px; }
+                        .subtitle { color: #65676b; margin-bottom: 30px; }
+                        .section { margin-bottom: 25px; }
+                        .section h2 { color: #1877F2; font-size: 18px; border-bottom: 2px solid #1877F2; padding-bottom: 5px; }
+                        .detail-row { display: flex; padding: 8px 0; border-bottom: 1px solid #ddd; }
+                        .detail-label { font-weight: bold; width: 180px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { padding: 12px; text-align: left; border: 1px solid #ddd; }
+                        th { background: #1877F2; color: white; }
+                        tr:nth-child(even) { background: #f8f9fa; }
+                        .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #1877F2; text-align: center; }
+                        .footer h3 { color: #1877F2; margin-bottom: 10px; }
+                        .footer a { color: #1877F2; text-decoration: none; font-weight: bold; }
+                        @media print { body { padding: 20px; } }
+                    </style>
+                </head>
+                <body>
+                    <h1>BuyRentTool</h1>
+                    <p class="subtitle">Mortgage Comparison Results</p>
+
+                    <div class="section">
+                        <h2>Property Details</h2>
+                        <div class="detail-row"><span class="detail-label">Home Price:</span> $${parseInt(homePrice).toLocaleString()}</div>
+                        <div class="detail-row"><span class="detail-label">State:</span> ${state}</div>
+                        <div class="detail-row"><span class="detail-label">Property Type:</span> ${propertyType}</div>
+                        <div class="detail-row"><span class="detail-label">Dwelling Type:</span> ${dwellingType}</div>
+                        <div class="detail-row"><span class="detail-label">Interest Rate:</span> ${interestRate}%</div>
+                        <div class="detail-row"><span class="detail-label">Loan Term:</span> ${loanTerm} years</div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Comparison Results</h2>
+                        ${tableHTML}
+                    </div>
+
+                    <div class="footer">
+                        <h3>Thank you for using BuyRentTool!</h3>
+                        <p>Visit us at: <a href="https://buyersmath.com">buyersmath.com</a></p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // Open print dialog (user can save as PDF)
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(pdfContent);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+    </script>
+</body>
+</html>
