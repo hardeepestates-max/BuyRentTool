@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free mortgage calculator. Compare down payments, estimate rates by credit score, see buy vs rent analysis. Auto-detects your state for accurate local data.">
     <meta name="keywords" content="mortgage calculator, buy vs rent, home affordability, down payment comparison, credit score mortgage rate">
-    <meta property="og:title" content="BuyRentTool - Free Mortgage Calculator">
+    <meta property="og:title" content="BuyersMath - Free Mortgage Calculator">
     <meta property="og:description" content="Compare mortgages, estimate rates, and see what you can afford. Free, no sign-up.">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://buyersmath.com">
-    <title>BuyRentTool - Free Mortgage & Home Affordability Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>BuyersMath - Free Mortgage & Home Affordability Calculator</title>
     <style>
         * {
             margin: 0;
@@ -710,6 +711,30 @@
                 gap: 0.75rem;
             }
 
+            #ratesGridTop {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+            }
+
+            #ratesGridBottom {
+                grid-template-columns: repeat(3, 1fr) !important;
+                max-width: 100% !important;
+                gap: 0.75rem !important;
+            }
+
+            #ratesGridTop .rate-card,
+            #ratesGridBottom .rate-card {
+                padding: 0.75rem !important;
+            }
+
+            .rate-card div:first-child {
+                font-size: 0.65rem !important;
+            }
+
+            .rate-card div:nth-child(2) {
+                font-size: 1.25rem !important;
+            }
+
             .form-group label {
                 font-size: 0.85rem;
             }
@@ -828,7 +853,7 @@
 </head>
 <body class="single-family">
     <header>
-        <h1>BuyRentTool</h1>
+        <h1>BuyersMath</h1>
         <p>Smart Real Estate Calculator - Make Informed Decisions</p>
 
         <!-- Property Type Switcher -->
@@ -865,7 +890,8 @@
     </header>
 
     <nav class="nav-tabs">
-        <button class="nav-tab active" data-section="mortgage">Mortgage Compare</button>
+        <button class="nav-tab active" data-section="dashboard">Rate Dashboard</button>
+        <button class="nav-tab" data-section="mortgage">Mortgage Compare</button>
         <button class="nav-tab" data-section="credit">Rate by Credit</button>
         <button class="nav-tab" data-section="rent">Rent Averages</button>
         <button class="nav-tab" data-section="breakeven">Buy vs Rent</button>
@@ -873,8 +899,165 @@
     </nav>
 
     <div class="container">
+        <!-- Rate Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <!-- Rates Dashboard - Today + Historical -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2 id="ratesTitle" style="margin-bottom: 0.25rem;">Today's Rates</h2>
+                        <p id="ratesSubtitle" style="color: var(--gray); margin: 0; font-size: 0.9rem;">Updated 4x daily (6am, 12pm, 6pm, 12am EST)</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <input type="date" id="historicalDate" min="1950-01-01" style="padding: 0.6rem 1rem; font-size: 0.95rem; cursor: pointer; border: 2px solid var(--soft-border); border-radius: 8px; background: var(--white);" onchange="lookupHistoricalRate()">
+                        <button class="btn btn-primary" onclick="resetToToday()" style="padding: 0.6rem 1.25rem;">
+                            Today
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div style="background: var(--primary); color: white; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                        <span id="rateTimestamp"></span>
+                    </div>
+                    <p id="historicalNote" style="color: var(--gray); font-size: 0.85rem; margin: 0; font-style: italic;"></p>
+                </div>
+
+                <!-- Top row: 4 cards -->
+                <div id="ratesGridTop" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="rate-card" style="background: linear-gradient(135deg, #1877F2 0%, #1565c0 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Conventional</div>
+                        <div id="rateConv" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.875%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">20% down</div>
+                    </div>
+                    <div class="rate-card" style="background: linear-gradient(135deg, #42b72a 0%, #36a420 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(66, 183, 42, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">FHA</div>
+                        <div id="rateFHA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.500%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">3.5% down</div>
+                    </div>
+                    <div class="rate-card" style="background: linear-gradient(135deg, #f7b928 0%, #e5a820 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(247, 185, 40, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">VA</div>
+                        <div id="rateVA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.250%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">0% down</div>
+                    </div>
+                    <div class="rate-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">5/1 ARM</div>
+                        <div id="rateARM" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.125%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">Adjustable</div>
+                    </div>
+                </div>
+                <!-- Bottom row: 3 cards centered -->
+                <div id="ratesGridBottom" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 75%; margin: 0 auto;">
+                    <div class="rate-card" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Jumbo</div>
+                        <div id="rateJumbo" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">7.125%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">$766k+</div>
+                    </div>
+                    <div class="rate-card" style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">USDA</div>
+                        <div id="rateUSDA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.375%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">Rural</div>
+                    </div>
+                    <div class="rate-card" style="background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">DSCR</div>
+                        <div id="rateDSCR" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">7.500%</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8;">Investors</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loan Type Comparison -->
+            <div class="card">
+                <h2>Loan Type Comparison</h2>
+                <div style="overflow-x: auto;">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Loan Type</th>
+                                <th>Min Down</th>
+                                <th>Min Credit</th>
+                                <th>PMI/MIP</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong style="color: #1877F2;">Conventional</strong></td>
+                                <td>3-5%</td>
+                                <td>620</td>
+                                <td>Required if &lt;20% down</td>
+                                <td>Good credit, want to avoid FHA fees</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #42b72a;">FHA</strong></td>
+                                <td>3.5%</td>
+                                <td>580</td>
+                                <td>Required for life of loan</td>
+                                <td>Lower credit, first-time buyers</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #f7b928;">VA</strong></td>
+                                <td>0%</td>
+                                <td>None (620 typical)</td>
+                                <td>No PMI</td>
+                                <td>Veterans, active military</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #e74c3c;">ARM (5/1)</strong></td>
+                                <td>5%</td>
+                                <td>620</td>
+                                <td>Same as conventional</td>
+                                <td>Planning to sell/refi within 5 years</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #9b59b6;">Jumbo</strong></td>
+                                <td>10-20%</td>
+                                <td>700</td>
+                                <td>Varies</td>
+                                <td>High-cost areas, luxury homes</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #1abc9c;">USDA</strong></td>
+                                <td>0%</td>
+                                <td>640</td>
+                                <td>Guarantee fee (lower than PMI)</td>
+                                <td>Rural properties, income limits apply</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: #e67e22;">DSCR</strong></td>
+                                <td>20-25%</td>
+                                <td>660</td>
+                                <td>No PMI</td>
+                                <td>Real estate investors, rental properties</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 30-Year Rate History Chart (at bottom) -->
+            <div class="card">
+                <h2>30-Year Rate History</h2>
+                <p style="color: var(--gray); margin-bottom: 1.5rem;">Historical mortgage rates from 1995 to present.</p>
+
+                <div style="position: relative; height: 450px; margin-bottom: 1rem;">
+                    <canvas id="rateChart"></canvas>
+                </div>
+
+                <div class="rate-legend" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #1877F2;"></span> Conventional 30yr</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #42b72a;"></span> FHA 30yr</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #f7b928;"></span> VA 30yr</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #e74c3c;"></span> 5/1 ARM</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #9b59b6;"></span> Jumbo</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #1abc9c;"></span> USDA</span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;"><span style="width: 20px; height: 3px; background: #e67e22;"></span> DSCR</span>
+                </div>
+            </div>
+        </section>
+
         <!-- Mortgage Comparison Section -->
-        <section id="mortgage" class="section active">
+        <section id="mortgage" class="section">
             <div class="card">
                 <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 20%</h2>
                 <p style="color: var(--gray); margin-bottom: 1.5rem;" id="mortgageSubtitle">See how different down payments affect your monthly payment, PMI, and total cost.</p>
@@ -1195,71 +1378,94 @@
             </div>
 
             <div class="card">
-                <h3>Credit Score Tiers & Typical Rates</h3>
+                <h3>Credit Score Tiers & Rates by Loan Type</h3>
+                <p style="color: var(--gray); margin-bottom: 1rem;">Estimated rates based on credit score for each major loan type.</p>
                 <div style="overflow-x: auto;">
-                    <table class="comparison-table">
+                    <table class="comparison-table" style="font-size: 0.85rem;">
                         <thead>
                             <tr>
-                                <th>Score Range</th>
+                                <th>Score</th>
                                 <th>Rating</th>
-                                <th>15-Year Fixed</th>
-                                <th>20-Year Fixed</th>
-                                <th>30-Year Fixed</th>
-                                <th>Approval</th>
+                                <th style="color: #1877F2;">Conv.</th>
+                                <th style="color: #42b72a;">FHA</th>
+                                <th style="color: #f7b928;">VA</th>
+                                <th style="color: #e74c3c;">ARM</th>
+                                <th style="color: #9b59b6;">Jumbo</th>
+                                <th style="color: #1abc9c;">USDA</th>
+                                <th style="color: #e67e22;">DSCR</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>760-850</td>
+                                <td>760+</td>
                                 <td style="color: #42b72a; font-weight: 600;">Excellent</td>
-                                <td>5.75%</td>
-                                <td>6.15%</td>
                                 <td>6.50%</td>
-                                <td>Very High</td>
+                                <td>6.25%</td>
+                                <td>6.00%</td>
+                                <td>5.88%</td>
+                                <td>6.75%</td>
+                                <td>6.13%</td>
+                                <td>7.25%</td>
                             </tr>
                             <tr>
                                 <td>700-759</td>
                                 <td style="color: #42b72a; font-weight: 600;">Good</td>
-                                <td>6.10%</td>
-                                <td>6.55%</td>
-                                <td>6.85%</td>
-                                <td>High</td>
+                                <td>6.88%</td>
+                                <td>6.50%</td>
+                                <td>6.25%</td>
+                                <td>6.13%</td>
+                                <td>7.13%</td>
+                                <td>6.38%</td>
+                                <td>7.50%</td>
                             </tr>
                             <tr>
                                 <td>660-699</td>
                                 <td style="color: #f7b928; font-weight: 600;">Fair</td>
-                                <td>6.50%</td>
-                                <td>6.95%</td>
                                 <td>7.25%</td>
-                                <td>Moderate</td>
+                                <td>6.75%</td>
+                                <td>6.50%</td>
+                                <td>6.50%</td>
+                                <td>7.50%</td>
+                                <td>6.63%</td>
+                                <td>7.88%</td>
                             </tr>
                             <tr>
                                 <td>620-659</td>
                                 <td style="color: #e89b00; font-weight: 600;">Below Avg</td>
-                                <td>7.10%</td>
-                                <td>7.55%</td>
-                                <td>7.85%</td>
-                                <td>Lower</td>
+                                <td>7.75%</td>
+                                <td>7.00%</td>
+                                <td>6.75%</td>
+                                <td>7.00%</td>
+                                <td>N/A</td>
+                                <td>7.00%</td>
+                                <td>8.25%</td>
                             </tr>
                             <tr>
                                 <td>580-619</td>
                                 <td style="color: #fa3e3e; font-weight: 600;">Poor</td>
-                                <td>7.75%</td>
-                                <td>8.25%</td>
                                 <td>8.50%</td>
-                                <td>FHA Option</td>
+                                <td>7.50%</td>
+                                <td>7.25%</td>
+                                <td>7.50%</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td>9.00%</td>
                             </tr>
                             <tr>
-                                <td>Below 580</td>
+                                <td>&lt;580</td>
                                 <td style="color: #c92a2a; font-weight: 600;">Very Poor</td>
-                                <td>8.50%+</td>
-                                <td>9.00%+</td>
-                                <td>9.25%+</td>
-                                <td>Difficult</td>
+                                <td>N/A</td>
+                                <td>8.00%+</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <p style="color: var(--gray); font-size: 0.85rem; margin-top: 1rem;"><strong>N/A</strong> = Not typically available for this credit score. FHA accepts lower scores with 10% down.</p>
             </div>
         </section>
 
@@ -1685,11 +1891,380 @@
     </div>
 
     <footer>
-        <p>BuyRentTool - Data based on 2024 national averages. For informational purposes only.</p>
+        <p>BuyersMath - Data based on 2024 national averages. For informational purposes only.</p>
         <p>Always consult with a qualified mortgage professional for personalized advice.</p>
     </footer>
 
     <script>
+        // Historical rate data by year (1950-2024) - Annual averages for Conventional 30yr
+        const historicalRatesByYear = {
+            1950: { conv: 4.50, note: 'Post-WWII era, VA loans becoming popular' },
+            1951: { conv: 4.50, note: 'Korean War period' },
+            1952: { conv: 4.50, note: 'Stable post-war economy' },
+            1953: { conv: 4.75, note: 'Eisenhower administration begins' },
+            1954: { conv: 4.75, note: 'FHA loans gaining popularity' },
+            1955: { conv: 4.75, note: 'Housing boom continues' },
+            1956: { conv: 5.00, note: 'Interstate Highway System begins' },
+            1957: { conv: 5.25, note: 'Recession begins' },
+            1958: { conv: 5.50, note: 'Recovery from recession' },
+            1959: { conv: 5.75, note: 'Economic expansion' },
+            1960: { conv: 5.75, note: 'Kennedy elected' },
+            1961: { conv: 5.75, note: 'New Frontier programs' },
+            1962: { conv: 5.50, note: 'Cuban Missile Crisis' },
+            1963: { conv: 5.50, note: 'Economic growth' },
+            1964: { conv: 5.50, note: 'Civil Rights Act' },
+            1965: { conv: 5.50, note: 'Great Society programs' },
+            1966: { conv: 6.25, note: 'Vietnam War escalation' },
+            1967: { conv: 6.50, note: 'Interest rates rising' },
+            1968: { conv: 7.00, note: 'Fair Housing Act passed' },
+            1969: { conv: 7.75, note: 'Inflation concerns' },
+            1970: { conv: 8.50, note: 'Recession begins' },
+            1971: { conv: 7.50, note: 'Nixon ends gold standard' },
+            1972: { conv: 7.50, note: 'Housing demand strong' },
+            1973: { conv: 8.00, note: 'Oil crisis begins' },
+            1974: { conv: 9.25, note: 'Stagflation' },
+            1975: { conv: 9.00, note: 'Economic recovery' },
+            1976: { conv: 8.75, note: 'Bicentennial year' },
+            1977: { conv: 8.75, note: 'Carter administration' },
+            1978: { conv: 9.50, note: 'Inflation accelerating' },
+            1979: { conv: 11.00, note: 'Second oil crisis' },
+            1980: { conv: 13.75, note: 'Volcker fights inflation' },
+            1981: { conv: 16.50, note: 'Historic high rates' },
+            1982: { conv: 16.00, note: 'Recession, rates peak' },
+            1983: { conv: 13.25, note: 'Recovery begins' },
+            1984: { conv: 13.75, note: 'Strong economic growth' },
+            1985: { conv: 12.50, note: 'Rates declining' },
+            1986: { conv: 10.25, note: 'Tax Reform Act' },
+            1987: { conv: 10.25, note: 'Black Monday crash' },
+            1988: { conv: 10.50, note: 'S&L crisis emerging' },
+            1989: { conv: 10.25, note: 'Berlin Wall falls' },
+            1990: { conv: 10.00, note: 'Recession begins' },
+            1991: { conv: 9.25, note: 'Gulf War' },
+            1992: { conv: 8.25, note: 'Clinton elected' },
+            1993: { conv: 7.25, note: 'Rates continue falling' },
+            1994: { conv: 8.25, note: 'Fed raises rates' },
+            1995: { conv: 7.75, note: 'Soft landing achieved' },
+            1996: { conv: 7.75, note: 'Economic expansion' },
+            1997: { conv: 7.50, note: 'Asian financial crisis' },
+            1998: { conv: 7.00, note: 'LTCM bailout' },
+            1999: { conv: 7.50, note: 'Y2K preparations' },
+            2000: { conv: 8.00, note: 'Dot-com bubble peaks' },
+            2001: { conv: 7.00, note: '9/11, recession' },
+            2002: { conv: 6.50, note: 'Fed cuts rates' },
+            2003: { conv: 5.75, note: 'Housing boom begins' },
+            2004: { conv: 5.75, note: 'Low rates fuel buying' },
+            2005: { conv: 5.75, note: 'Housing prices peak' },
+            2006: { conv: 6.50, note: 'Fed raises rates' },
+            2007: { conv: 6.25, note: 'Subprime crisis begins' },
+            2008: { conv: 6.00, note: 'Financial crisis' },
+            2009: { conv: 5.00, note: 'Great Recession' },
+            2010: { conv: 4.75, note: 'QE programs' },
+            2011: { conv: 4.50, note: 'Rates historic lows' },
+            2012: { conv: 3.75, note: 'QE3 announced' },
+            2013: { conv: 4.00, note: 'Taper tantrum' },
+            2014: { conv: 4.25, note: 'Recovery continues' },
+            2015: { conv: 4.00, note: 'Fed ends QE' },
+            2016: { conv: 3.75, note: 'Brexit, Trump elected' },
+            2017: { conv: 4.00, note: 'Fed begins hiking' },
+            2018: { conv: 4.50, note: 'Four rate hikes' },
+            2019: { conv: 4.00, note: 'Fed cuts rates' },
+            2020: { conv: 3.00, note: 'COVID pandemic, historic lows' },
+            2021: { conv: 3.00, note: 'Stimulus, inflation rising' },
+            2022: { conv: 5.50, note: 'Fed aggressive hikes' },
+            2023: { conv: 6.75, note: 'Rates stabilize high' },
+            2024: { conv: 6.875, note: 'Current market' }
+        };
+
+        // Get rates for a specific year with all loan types calculated
+        function getRatesForYear(year) {
+            const baseData = historicalRatesByYear[year] || historicalRatesByYear[2024];
+            const conv = baseData.conv;
+
+            // Calculate other loan types based on conventional (historical spreads)
+            let fha, va, arm, jumbo, usda, dscr;
+
+            if (year < 1980) {
+                // Before 1980, fewer loan types existed
+                fha = year >= 1934 ? conv - 0.25 : null;
+                va = year >= 1944 ? conv - 0.50 : null;
+                arm = year >= 1975 ? conv - 0.40 : null;
+                jumbo = year >= 1970 ? conv + 0.25 : null;
+                usda = year >= 1991 ? conv - 0.25 : null;
+                dscr = year >= 2000 ? conv + 1.00 : null;
+            } else {
+                fha = conv - 0.375;
+                va = conv - 0.625;
+                arm = conv - 0.75;
+                jumbo = conv + 0.25;
+                usda = year >= 1991 ? conv - 0.50 : null;
+                dscr = year >= 2000 ? conv + 0.625 : null;
+            }
+
+            return {
+                conventional: conv,
+                fha: fha,
+                va: va,
+                arm: arm,
+                jumbo: jumbo,
+                usda: usda,
+                dscr: dscr,
+                note: baseData.note
+            };
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const hours = now.getHours();
+            let updateTime;
+
+            // Determine which update period we're in (6am, 12pm, 6pm, 12am)
+            if (hours >= 0 && hours < 6) updateTime = 'Today 12:00 AM EST';
+            else if (hours >= 6 && hours < 12) updateTime = 'Today 6:00 AM EST';
+            else if (hours >= 12 && hours < 18) updateTime = 'Today 12:00 PM EST';
+            else updateTime = 'Today 6:00 PM EST';
+
+            document.getElementById('rateTimestamp').textContent = updateTime;
+
+            // Set max date for historical picker
+            const dateInput = document.getElementById('historicalDate');
+            if (dateInput) {
+                dateInput.max = now.toISOString().split('T')[0];
+            }
+        }
+
+        // Today's default rates
+        const todayRates = {
+            conventional: 6.875,
+            fha: 6.500,
+            va: 6.250,
+            arm: 6.125,
+            jumbo: 7.125,
+            usda: 6.375,
+            dscr: 7.500
+        };
+
+        // Update rate display
+        function updateRateDisplay(rates, isHistorical, dateStr, note) {
+            document.getElementById('rateConv').textContent = rates.conventional ? rates.conventional.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateFHA').textContent = rates.fha ? rates.fha.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateVA').textContent = rates.va ? rates.va.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateARM').textContent = rates.arm ? rates.arm.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateJumbo').textContent = rates.jumbo ? rates.jumbo.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateUSDA').textContent = rates.usda ? rates.usda.toFixed(3) + '%' : 'N/A';
+            document.getElementById('rateDSCR').textContent = rates.dscr ? rates.dscr.toFixed(3) + '%' : 'N/A';
+
+            const titleEl = document.getElementById('ratesTitle');
+            const subtitleEl = document.getElementById('ratesSubtitle');
+            const noteEl = document.getElementById('historicalNote');
+            const timestampEl = document.getElementById('rateTimestamp');
+
+            if (isHistorical) {
+                titleEl.textContent = `Rates for ${dateStr}`;
+                subtitleEl.textContent = 'Historical average rates for this period';
+                timestampEl.textContent = 'Historical';
+                noteEl.textContent = note ? note : '';
+            } else {
+                titleEl.textContent = "Today's Rates";
+                subtitleEl.textContent = 'Updated 4x daily (6am, 12pm, 6pm, 12am EST)';
+                updateTimestamp();
+                noteEl.textContent = '';
+            }
+        }
+
+        // Lookup historical rate
+        function lookupHistoricalRate() {
+            const dateInput = document.getElementById('historicalDate');
+            if (!dateInput.value) return;
+
+            const selectedDate = new Date(dateInput.value);
+            const year = selectedDate.getFullYear();
+            const rates = getRatesForYear(year);
+
+            // Format the date nicely
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = selectedDate.toLocaleDateString('en-US', options);
+
+            updateRateDisplay(rates, true, dateStr, rates.note);
+        }
+
+        // Reset to today
+        function resetToToday() {
+            document.getElementById('historicalDate').value = '';
+            updateRateDisplay(todayRates, false, '', '');
+        }
+
+        // Initialize Rate Dashboard Chart - 30 Year History
+        function initRateChart() {
+            const ctx = document.getElementById('rateChart');
+            if (!ctx) return;
+
+            // 30-year historical rate data (1995-2024) - Annual averages
+            const labels = ['1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'];
+
+            // Build rate arrays from historical data
+            const rateData = {
+                conventional: [],
+                fha: [],
+                va: [],
+                arm: [],
+                jumbo: [],
+                usda: [],
+                dscr: []
+            };
+
+            labels.forEach(yearStr => {
+                const year = parseInt(yearStr);
+                const rates = getRatesForYear(year);
+                rateData.conventional.push(rates.conventional);
+                rateData.fha.push(rates.fha || null);
+                rateData.va.push(rates.va || null);
+                rateData.arm.push(rates.arm || null);
+                rateData.jumbo.push(rates.jumbo || null);
+                rateData.usda.push(rates.usda || null);
+                rateData.dscr.push(rates.dscr || null);
+            });
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Conventional 30yr',
+                            data: rateData.conventional,
+                            borderColor: '#1877F2',
+                            backgroundColor: 'rgba(24, 119, 242, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'FHA 30yr',
+                            data: rateData.fha,
+                            borderColor: '#42b72a',
+                            backgroundColor: 'rgba(66, 183, 42, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'VA 30yr',
+                            data: rateData.va,
+                            borderColor: '#f7b928',
+                            backgroundColor: 'rgba(247, 185, 40, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: '5/1 ARM',
+                            data: rateData.arm,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Jumbo',
+                            data: rateData.jumbo,
+                            borderColor: '#9b59b6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'USDA',
+                            data: rateData.usda,
+                            borderColor: '#1abc9c',
+                            backgroundColor: 'rgba(26, 188, 156, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'DSCR',
+                            data: rateData.dscr,
+                            borderColor: '#e67e22',
+                            backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(28, 30, 33, 0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y === null) return null;
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 15
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: 2,
+                            max: 10,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize chart and timestamp when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initRateChart();
+            updateTimestamp();
+        });
+
         // Current property type
         let currentPropertyType = 'single-family';
 
@@ -2845,7 +3420,7 @@
                 }
             }
 
-            const subject = `BuyRentTool - Mortgage Comparison for $${parseInt(homePrice).toLocaleString()} Home`;
+            const subject = `BuyersMath - Mortgage Comparison for $${parseInt(homePrice).toLocaleString()} Home`;
 
             const body = `BUYRENTTOOL - MORTGAGE COMPARISON RESULTS
 ==========================================
@@ -2862,7 +3437,7 @@ COMPARISON RESULTS:
 ${resultsText}
 
 ==========================================
-Thank you for using BuyRentTool!
+Thank you for using BuyersMath!
 Visit us: https://buyersmath.com
 ==========================================`;
 
@@ -2902,7 +3477,7 @@ Visit us: https://buyersmath.com
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>BuyRentTool - Mortgage Comparison</title>
+                    <title>BuyersMath - Mortgage Comparison</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 40px; color: #1c1e21; }
                         h1 { color: #1877F2; margin-bottom: 5px; }
@@ -2922,7 +3497,7 @@ Visit us: https://buyersmath.com
                     </style>
                 </head>
                 <body>
-                    <h1>BuyRentTool</h1>
+                    <h1>BuyersMath</h1>
                     <p class="subtitle">Mortgage Comparison Results</p>
 
                     <div class="section">
@@ -2941,7 +3516,7 @@ Visit us: https://buyersmath.com
                     </div>
 
                     <div class="footer">
-                        <h3>Thank you for using BuyRentTool!</h3>
+                        <h3>Thank you for using BuyersMath!</h3>
                         <p>Visit us at: <a href="https://buyersmath.com">buyersmath.com</a></p>
                     </div>
                 </body>
