@@ -734,14 +734,14 @@
             }
 
             #ratesGridTop {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 0.75rem !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 0.5rem !important;
             }
 
             #ratesGridBottom {
-                grid-template-columns: repeat(3, 1fr) !important;
+                grid-template-columns: repeat(4, 1fr) !important;
                 max-width: 100% !important;
-                gap: 0.75rem !important;
+                gap: 0.5rem !important;
             }
 
             #ratesGridTop .rate-card,
@@ -956,8 +956,8 @@
                         <div style="font-size: 0.7rem; opacity: 0.8;">0% down</div>
                     </div>
                 </div>
-                <!-- Middle row: 2 cards -->
-                <div id="ratesGridMiddle" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 66%; margin: 0 auto 1rem auto;">
+                <!-- Bottom row: 4 cards -->
+                <div id="ratesGridBottom" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">5/1 ARM</div>
                         <div id="rateARM" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.125%</div>
@@ -968,9 +968,6 @@
                         <div id="rateJumbo" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">7.125%</div>
                         <div style="font-size: 0.7rem; opacity: 0.8;">$766k+</div>
                     </div>
-                </div>
-                <!-- Bottom row: 2 cards -->
-                <div id="ratesGridBottom" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 66%; margin: 0 auto;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">USDA</div>
                         <div id="rateUSDA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.375%</div>
