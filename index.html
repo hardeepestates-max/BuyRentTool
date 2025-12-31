@@ -336,14 +336,36 @@
             margin-top: 1rem;
         }
 
+        /* Credit tier highlighting */
+        #creditTierBody tr {
+            transition: all 0.3s ease;
+        }
+
+        #creditTierBody tr.tier-active {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
+        }
+
+        #creditTierBody tr.tier-active td:first-child,
+        #creditTierBody tr.tier-active td:nth-child(2) {
+            font-weight: 700;
+        }
+
         /* State Stats */
         .state-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.75rem;
             max-height: 400px;
             overflow-y: auto;
             padding: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .state-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .state-item {
@@ -890,12 +912,11 @@
     </header>
 
     <nav class="nav-tabs">
-        <button class="nav-tab active" data-section="dashboard">Rate Dashboard</button>
-        <button class="nav-tab" data-section="mortgage">Mortgage Compare</button>
-        <button class="nav-tab" data-section="credit">Rate by Credit</button>
-        <button class="nav-tab" data-section="rent">Rent Averages</button>
-        <button class="nav-tab" data-section="breakeven">Buy vs Rent</button>
-        <button class="nav-tab" data-section="affordability">What Can I Afford</button>
+        <button class="nav-tab active" data-section="dashboard">Rates</button>
+        <button class="nav-tab" data-section="mortgage">Mortgage</button>
+        <button class="nav-tab" data-section="credit">Credit Score</button>
+        <button class="nav-tab" data-section="rent">Rent Data</button>
+        <button class="nav-tab" data-section="affordability">Affordability</button>
     </nav>
 
     <div class="container">
@@ -906,21 +927,11 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
                     <div>
                         <h2 id="ratesTitle" style="margin-bottom: 0.25rem;">Today's Rates</h2>
-                        <p id="ratesSubtitle" style="color: var(--gray); margin: 0; font-size: 0.9rem;">Updated 4x daily (6am, 12pm, 6pm, 12am EST)</p>
+                        <p id="ratesSubtitle" style="color: var(--gray); margin: 0; font-size: 0.9rem;">Updated daily · <span id="rateTimezone"></span></p>
                     </div>
-                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                        <input type="date" id="historicalDate" min="1950-01-01" style="padding: 0.6rem 1rem; font-size: 0.95rem; cursor: pointer; border: 2px solid var(--soft-border); border-radius: 8px; background: var(--white);" onchange="lookupHistoricalRate()">
-                        <button class="btn btn-primary" onclick="resetToToday()" style="padding: 0.6rem 1.25rem;">
-                            Today
-                        </button>
-                    </div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                    <div style="background: var(--primary); color: white; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                    <div style="background: var(--secondary); color: white; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
                         <span id="rateTimestamp"></span>
                     </div>
-                    <p id="historicalNote" style="color: var(--gray); font-size: 0.85rem; margin: 0; font-style: italic;"></p>
                 </div>
 
                 <!-- Top row: 4 cards -->
@@ -1037,8 +1048,39 @@
 
             <!-- 30-Year Rate History Chart (at bottom) -->
             <div class="card">
-                <h2>30-Year Rate History</h2>
-                <p style="color: var(--gray); margin-bottom: 1.5rem;">Historical mortgage rates from 1995 to present.</p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2 style="margin-bottom: 0.25rem;">Rate History</h2>
+                        <p style="color: var(--gray); margin: 0;">Historical mortgage rates from 2015 to present</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-size: 0.85rem; color: var(--gray);">Range:</label>
+                            <select id="chartRangeSelect" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;">
+                                <option value="10">2015 - Present</option>
+                                <option value="20">2005 - Present</option>
+                                <option value="30">1995 - Present</option>
+                                <option value="50">1975 - Present</option>
+                                <option value="75">1950 - Present</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-size: 0.85rem; color: var(--gray);">Lookup:</label>
+                            <input type="date" id="historicalDatePicker" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;" min="1950-01-01">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical Rate Display (hidden by default) -->
+                <div id="historicalRateDisplay" style="display: none; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--gray);">Rates on <span id="historicalDateLabel" style="font-weight: 600; color: var(--dark);"></span></p>
+                        </div>
+                        <button id="clearHistoricalDate" style="background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.85rem; text-decoration: underline;">Clear & Show Today</button>
+                    </div>
+                    <div id="historicalRatesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 0.75rem;"></div>
+                </div>
 
                 <div style="position: relative; height: 450px; margin-bottom: 1rem;">
                     <canvas id="rateChart"></canvas>
@@ -1059,7 +1101,7 @@
         <!-- Mortgage Comparison Section -->
         <section id="mortgage" class="section">
             <div class="card">
-                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 20%</h2>
+                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 20% vs 30%</h2>
                 <p style="color: var(--gray); margin-bottom: 1.5rem;" id="mortgageSubtitle">See how different down payments affect your monthly payment, PMI, and total cost.</p>
 
                 <div class="form-row">
@@ -1186,6 +1228,7 @@
                                     <th>5% Down</th>
                                     <th>10% Down</th>
                                     <th>20% Down</th>
+                                    <th>30% Down</th>
                                 </tr>
                             </thead>
                             <tbody id="comparisonBody">
@@ -1370,11 +1413,6 @@
                 <div class="info-box">
                     <p><strong>How it works:</strong> Lenders use credit scores to assess risk. Higher scores typically mean lower rates because you're seen as less likely to default.</p>
                 </div>
-
-                <h3 style="margin-top: 2rem;">Rate Impact on $400,000 Home (10% Down)</h3>
-                <div id="creditImpactResults" class="results-grid">
-                    <!-- Populated by JS -->
-                </div>
             </div>
 
             <div class="card">
@@ -1395,8 +1433,8 @@
                                 <th style="color: #e67e22;">DSCR</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="creditTierBody">
+                            <tr data-tier="excellent" data-min="760" data-max="850">
                                 <td>760+</td>
                                 <td style="color: #42b72a; font-weight: 600;">Excellent</td>
                                 <td>6.50%</td>
@@ -1407,7 +1445,7 @@
                                 <td>6.13%</td>
                                 <td>7.25%</td>
                             </tr>
-                            <tr>
+                            <tr data-tier="good" data-min="700" data-max="759">
                                 <td>700-759</td>
                                 <td style="color: #42b72a; font-weight: 600;">Good</td>
                                 <td>6.88%</td>
@@ -1418,7 +1456,7 @@
                                 <td>6.38%</td>
                                 <td>7.50%</td>
                             </tr>
-                            <tr>
+                            <tr data-tier="fair" data-min="660" data-max="699">
                                 <td>660-699</td>
                                 <td style="color: #f7b928; font-weight: 600;">Fair</td>
                                 <td>7.25%</td>
@@ -1429,7 +1467,7 @@
                                 <td>6.63%</td>
                                 <td>7.88%</td>
                             </tr>
-                            <tr>
+                            <tr data-tier="below" data-min="620" data-max="659">
                                 <td>620-659</td>
                                 <td style="color: #e89b00; font-weight: 600;">Below Avg</td>
                                 <td>7.75%</td>
@@ -1440,7 +1478,7 @@
                                 <td>7.00%</td>
                                 <td>8.25%</td>
                             </tr>
-                            <tr>
+                            <tr data-tier="poor" data-min="580" data-max="619">
                                 <td>580-619</td>
                                 <td style="color: #fa3e3e; font-weight: 600;">Poor</td>
                                 <td>8.50%</td>
@@ -1451,7 +1489,7 @@
                                 <td>N/A</td>
                                 <td>9.00%</td>
                             </tr>
-                            <tr>
+                            <tr data-tier="verypoor" data-min="300" data-max="579">
                                 <td>&lt;580</td>
                                 <td style="color: #c92a2a; font-weight: 600;">Very Poor</td>
                                 <td>N/A</td>
@@ -1503,8 +1541,18 @@
                     </div>
                     <div class="result-card">
                         <h4>Year-over-Year Change</h4>
-                        <div class="amount">+3.2%</div>
-                        <div class="detail">2024-2025 avg</div>
+                        <div class="amount" style="color: #ef4444;">+3.2%</div>
+                        <div class="detail">2024 vs 2023</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>3-Year Average</h4>
+                        <div class="amount">$1,975</div>
+                        <div class="detail">2022-2024 avg</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>3-Year Change</h4>
+                        <div class="amount" style="color: #ef4444;">+12.5%</div>
+                        <div class="detail">2022 to 2024</div>
                     </div>
                 </div>
             </div>
@@ -1599,166 +1647,6 @@
                                 <tr><td>3. South Dakota</td><td style="font-weight: 600;">$1,012</td></tr>
                                 <tr><td>4. Oklahoma</td><td style="font-weight: 600;">$1,045</td></tr>
                                 <tr><td>5. Kentucky</td><td style="font-weight: 600;">$1,067</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Buy vs Rent Section -->
-        <section id="breakeven" class="section">
-            <div class="card">
-                <h2>Buy vs Rent: Breakeven Analysis</h2>
-                <p style="color: var(--gray); margin-bottom: 1.5rem;">Find out how long you need to stay in a home for buying to make more financial sense than renting.</p>
-
-                <!-- State Selector for Buy vs Rent -->
-                <div class="form-row" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="bvStateSelect">Select State (auto-fills data)</label>
-                        <select id="bvStateSelect" onchange="updateBuyRentStateDefaults()">
-                            <option value="">-- Select State for Market Data --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- State Market Data Display -->
-                <div id="bvStateMarketData" style="display: none; margin-bottom: 1.5rem;">
-                    <div class="results-grid">
-                        <div class="result-card" style="padding: 1rem;">
-                            <h4 style="font-size: 0.75rem;">State Median Price</h4>
-                            <div class="amount" style="font-size: 1.3rem;" id="bvStateMedian">$0</div>
-                        </div>
-                        <div class="result-card" style="padding: 1rem;">
-                            <h4 style="font-size: 0.75rem;">State Avg Rent</h4>
-                            <div class="amount" style="font-size: 1.3rem;" id="bvStateRent">$0</div>
-                        </div>
-                        <div class="result-card" style="padding: 1rem;">
-                            <h4 style="font-size: 0.75rem;">Property Tax</h4>
-                            <div class="amount" style="font-size: 1.3rem;" id="bvStateTax">0%</div>
-                        </div>
-                        <div class="result-card" style="padding: 1rem;">
-                            <h4 style="font-size: 0.75rem;">Insurance/yr</h4>
-                            <div class="amount" style="font-size: 1.3rem;" id="bvStateInsurance">$0</div>
-                        </div>
-                    </div>
-
-                    <!-- Sq Ft Breakdown for Buy vs Rent -->
-                    <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #fff 100%); border-radius: 8px; border: 1px solid #bfdbfe;">
-                        <h4 style="color: #1e40af; margin-bottom: 0.75rem; font-size: 0.9rem;" id="bvSqftTitle">Median Prices by Size</h4>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center;">
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--gray);">Under 2k sqft</div>
-                                <div style="font-weight: 600;" id="bvSqftUnder2k">$0</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--gray);">2k-3k sqft</div>
-                                <div style="font-weight: 600;" id="bvSqft2k3k">$0</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--gray);">3k-4k sqft</div>
-                                <div style="font-weight: 600;" id="bvSqft3k4k">$0</div>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--gray);">4k+ sqft</div>
-                                <div style="font-weight: 600;" id="bvSqft4kplus">$0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bvHomePrice">Home Price ($)</label>
-                        <input type="number" id="bvHomePrice" value="400000" min="50000" step="5000">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvDownPayment">Down Payment (%)</label>
-                        <input type="number" id="bvDownPayment" value="10" min="3" max="50" step="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvInterestRate">Interest Rate (%)</label>
-                        <input type="number" id="bvInterestRate" value="6.5" min="1" max="15" step="0.125">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvMonthlyRent">Current/Comparable Rent ($)</label>
-                        <input type="number" id="bvMonthlyRent" value="2000" min="500" step="50">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bvAppreciation">Home Appreciation (%/yr)</label>
-                        <input type="number" id="bvAppreciation" value="3" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvRentIncrease">Rent Increase (%/yr)</label>
-                        <input type="number" id="bvRentIncrease" value="3" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvPropertyTax">Property Tax (%/yr)</label>
-                        <input type="number" id="bvPropertyTax" value="1.1" min="0" max="5" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label for="bvClosingCosts">Closing Costs (%)</label>
-                        <input type="number" id="bvClosingCosts" value="3" min="1" max="6" step="0.5">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" onclick="calculateBreakeven()">Calculate Breakeven</button>
-
-                <div id="breakevenResults" style="display: none;">
-                    <div class="results-grid" style="margin-top: 1.5rem;">
-                        <div class="result-card">
-                            <h4>Breakeven Point</h4>
-                            <div class="amount" id="breakevenYears">0 years</div>
-                            <div class="detail">When buying becomes cheaper</div>
-                        </div>
-                        <div class="result-card">
-                            <h4>Monthly Buy Cost</h4>
-                            <div class="amount" id="monthlyBuyCost">$0</div>
-                            <div class="detail">Principal, interest, tax, insurance</div>
-                        </div>
-                        <div class="result-card">
-                            <h4>Total Rent (5 yrs)</h4>
-                            <div class="amount" id="totalRent5">$0</div>
-                            <div class="detail">Money that builds no equity</div>
-                        </div>
-                        <div class="result-card">
-                            <h4>Equity Built (5 yrs)</h4>
-                            <div class="amount" id="equityBuilt5">$0</div>
-                            <div class="detail">Your ownership stake</div>
-                        </div>
-                    </div>
-
-                    <div class="breakeven-visual">
-                        <h4>Time to Breakeven Visualization</h4>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>0 years</span>
-                            <span>5 years</span>
-                            <span>10 years</span>
-                        </div>
-                        <div class="breakeven-bar">
-                            <div class="breakeven-marker" id="breakevenMarker" style="left: 30%;">
-                                <span id="breakevenLabel">3 yrs</span>
-                            </div>
-                        </div>
-                        <p style="margin-top: 2rem; color: var(--gray); font-size: 0.9rem;" id="breakevenAdvice"></p>
-                    </div>
-
-                    <h3 style="margin-top: 2rem;">Year-by-Year Comparison</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="comparison-table">
-                            <thead>
-                                <tr>
-                                    <th>Year</th>
-                                    <th>Total Rent Paid</th>
-                                    <th>Total Buy Costs</th>
-                                    <th>Home Equity</th>
-                                    <th>Net Position (Buy)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="breakevenTable">
                             </tbody>
                         </table>
                     </div>
@@ -1891,8 +1779,8 @@
     </div>
 
     <footer>
-        <p>BuyersMath - Data based on 2024 national averages. For informational purposes only.</p>
-        <p>Always consult with a qualified mortgage professional for personalized advice.</p>
+        <p>BuyersMath - Data based on 2024-2025 national averages. For informational purposes only.</p>
+        <p>Consult with a qualified mortgage professional for personalized advice.</p>
     </footer>
 
     <script>
@@ -2012,24 +1900,34 @@
             };
         }
 
-        // Update timestamp
+        // Update timestamp and timezone
         function updateTimestamp() {
             const now = new Date();
-            const hours = now.getHours();
-            let updateTime;
+            const timestampEl = document.getElementById('rateTimestamp');
+            const timezoneEl = document.getElementById('rateTimezone');
 
-            // Determine which update period we're in (6am, 12pm, 6pm, 12am)
-            if (hours >= 0 && hours < 6) updateTime = 'Today 12:00 AM EST';
-            else if (hours >= 6 && hours < 12) updateTime = 'Today 6:00 AM EST';
-            else if (hours >= 12 && hours < 18) updateTime = 'Today 12:00 PM EST';
-            else updateTime = 'Today 6:00 PM EST';
+            // Show current date
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            timestampEl.textContent = dateStr;
 
-            document.getElementById('rateTimestamp').textContent = updateTime;
-
-            // Set max date for historical picker
-            const dateInput = document.getElementById('historicalDate');
-            if (dateInput) {
-                dateInput.max = now.toISOString().split('T')[0];
+            // Fetch timezone from IP
+            if (timezoneEl) {
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const timezone = data.timezone || 'America/New_York';
+                        // Extract readable timezone name
+                        const tzParts = timezone.split('/');
+                        const tzDisplay = tzParts.length > 1 ? tzParts[1].replace(/_/g, ' ') : timezone;
+                        timezoneEl.textContent = tzDisplay + ' Time';
+                    })
+                    .catch(() => {
+                        // Fallback to browser timezone
+                        const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        const tzParts = tzName.split('/');
+                        const tzDisplay = tzParts.length > 1 ? tzParts[1].replace(/_/g, ' ') : 'Local';
+                        timezoneEl.textContent = tzDisplay + ' Time';
+                    });
             }
         }
 
@@ -2094,13 +1992,27 @@
             updateRateDisplay(todayRates, false, '', '');
         }
 
-        // Initialize Rate Dashboard Chart - 30 Year History
-        function initRateChart() {
+        // Global chart instance
+        let rateChartInstance = null;
+
+        // Initialize Rate Dashboard Chart - Dynamic Range
+        function initRateChart(yearsBack = 10) {
             const ctx = document.getElementById('rateChart');
             if (!ctx) return;
 
-            // 30-year historical rate data (1995-2024) - Annual averages
-            const labels = ['1995', '1996', '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'];
+            // Destroy existing chart if it exists
+            if (rateChartInstance) {
+                rateChartInstance.destroy();
+            }
+
+            const currentYear = new Date().getFullYear();
+            const startYear = currentYear - yearsBack;
+
+            // Build labels array from startYear to currentYear
+            const labels = [];
+            for (let y = startYear; y <= currentYear; y++) {
+                labels.push(y.toString());
+            }
 
             // Build rate arrays from historical data
             const rateData = {
@@ -2125,7 +2037,7 @@
                 rateData.dscr.push(rates.dscr || null);
             });
 
-            new Chart(ctx, {
+            rateChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -2261,8 +2173,72 @@
 
         // Initialize chart and timestamp when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initRateChart();
+            initRateChart(10); // Default to 2015 - Present (10 years)
             updateTimestamp();
+
+            // Chart range selector
+            const rangeSelect = document.getElementById('chartRangeSelect');
+            if (rangeSelect) {
+                rangeSelect.addEventListener('change', function() {
+                    const yearsBack = parseInt(this.value);
+                    initRateChart(yearsBack);
+                });
+            }
+
+            // Historical date picker in chart section
+            const historicalDatePicker = document.getElementById('historicalDatePicker');
+            const historicalDisplay = document.getElementById('historicalRateDisplay');
+            const historicalDateLabel = document.getElementById('historicalDateLabel');
+            const historicalRatesGrid = document.getElementById('historicalRatesGrid');
+            const clearHistoricalBtn = document.getElementById('clearHistoricalDate');
+
+            if (historicalDatePicker) {
+                // Set max date to today
+                historicalDatePicker.max = new Date().toISOString().split('T')[0];
+
+                historicalDatePicker.addEventListener('change', function() {
+                    if (!this.value) {
+                        historicalDisplay.style.display = 'none';
+                        return;
+                    }
+
+                    const selectedDate = new Date(this.value);
+                    const year = selectedDate.getFullYear();
+                    const rates = getRatesForYear(year);
+
+                    // Format date nicely
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    historicalDateLabel.textContent = selectedDate.toLocaleDateString('en-US', options);
+
+                    // Build mini rate cards
+                    const rateTypes = [
+                        { key: 'conventional', label: 'Conv', color: '#1877F2' },
+                        { key: 'fha', label: 'FHA', color: '#42b72a' },
+                        { key: 'va', label: 'VA', color: '#f7b928' },
+                        { key: 'arm', label: 'ARM', color: '#e74c3c' },
+                        { key: 'jumbo', label: 'Jumbo', color: '#9b59b6' },
+                        { key: 'usda', label: 'USDA', color: '#1abc9c' },
+                        { key: 'dscr', label: 'DSCR', color: '#e67e22' }
+                    ];
+
+                    historicalRatesGrid.innerHTML = rateTypes.map(rt => {
+                        const rate = rates[rt.key];
+                        return `<div style="text-align: center; padding: 0.5rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">${rt.label}</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: ${rt.color};">${rate ? rate.toFixed(2) + '%' : 'N/A'}</div>
+                        </div>`;
+                    }).join('');
+
+                    historicalDisplay.style.display = 'block';
+                });
+            }
+
+            if (clearHistoricalBtn) {
+                clearHistoricalBtn.addEventListener('click', function() {
+                    historicalDatePicker.value = '';
+                    historicalDisplay.style.display = 'none';
+                });
+            }
         });
 
         // Current property type
@@ -2290,6 +2266,12 @@
                     document.querySelector('.dwelling-type-btn[data-dwelling="sfh"]').classList.add('active');
                     updateDwellingTypeUI();
                 }
+
+                // Navigate to Mortgage Compare section
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById('mortgage').classList.add('active');
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('.nav-tab[data-section="mortgage"]').classList.add('active');
             });
         });
 
@@ -2415,7 +2397,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 20%';
+                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 20% vs 30%';
                     subtitle.textContent = 'See how different down payments affect your monthly payment, PMI, and total cost.';
                     priceLabel.textContent = 'Home Price ($)';
                     homePrice.value = 400000;
@@ -2765,7 +2747,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    downPayments = [5, 10, 20];
+                    downPayments = [5, 10, 20, 30];
                     break;
                 case 'multi-family':
                     const numUnits = parseInt(document.getElementById('numUnits').value);
@@ -3025,43 +3007,21 @@
             document.getElementById('creditRating').style.color = color;
             document.getElementById('rateEstimate').textContent = `Estimated Rate: ${estimatedRate.toFixed(2)}%`;
 
-            // Calculate impact on payments
-            const homePrice = 400000;
-            const downPayment = 0.10;
-            const loanAmount = homePrice * (1 - downPayment);
-
-            const excellentPayment = calculateMonthlyPayment(loanAmount, 6.0, 30);
-            const yourPayment = calculateMonthlyPayment(loanAmount, estimatedRate, 30);
-            const difference = yourPayment - excellentPayment;
-            const lifetimeDiff = difference * 360;
-
-            const resultsDiv = document.getElementById('creditImpactResults');
-            resultsDiv.innerHTML = `
-                <div class="result-card">
-                    <h4>Your Estimated Payment</h4>
-                    <div class="amount">${formatCurrency(yourPayment)}/mo</div>
-                    <div class="detail">At ${estimatedRate.toFixed(2)}% rate</div>
-                </div>
-                <div class="result-card">
-                    <h4>Excellent Credit Payment</h4>
-                    <div class="amount">${formatCurrency(excellentPayment)}/mo</div>
-                    <div class="detail">At 6.00% rate</div>
-                </div>
-                <div class="result-card">
-                    <h4>Monthly Difference</h4>
-                    <div class="amount" style="color: ${difference > 0 ? '#ef4444' : '#10b981'}">
-                        ${difference > 0 ? '+' : ''}${formatCurrency(difference)}
-                    </div>
-                    <div class="detail">${difference > 0 ? 'Extra cost per month' : 'You have great credit!'}</div>
-                </div>
-                <div class="result-card">
-                    <h4>30-Year Difference</h4>
-                    <div class="amount" style="color: ${lifetimeDiff > 0 ? '#ef4444' : '#10b981'}">
-                        ${lifetimeDiff > 0 ? '+' : ''}${formatCurrency(lifetimeDiff)}
-                    </div>
-                    <div class="detail">${lifetimeDiff > 0 ? 'Total extra over loan life' : 'Great savings!'}</div>
-                </div>
-            `;
+            // Highlight the corresponding tier in the table
+            const tierBody = document.getElementById('creditTierBody');
+            if (tierBody) {
+                const rows = tierBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    row.classList.remove('tier-active');
+                    const min = parseInt(row.dataset.min);
+                    const max = parseInt(row.dataset.max);
+                    if (score >= min && score <= max) {
+                        row.classList.add('tier-active');
+                        // Scroll the row into view smoothly
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
         }
 
         // State Details
