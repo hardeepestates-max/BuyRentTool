@@ -929,13 +929,17 @@
                         <h2 id="ratesTitle" style="margin-bottom: 0.25rem;">Today's Rates</h2>
                         <p id="ratesSubtitle" style="color: var(--gray); margin: 0; font-size: 0.9rem;">Updated daily · <span id="rateTimezone"></span></p>
                     </div>
-                    <div style="background: var(--secondary); color: white; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
-                        <span id="rateTimestamp"></span>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <input type="date" id="historicalDate" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;">
+                        <div style="background: var(--secondary); color: white; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                            <span id="rateTimestamp"></span>
+                        </div>
                     </div>
                 </div>
+                <p id="historicalNote" style="color: var(--gray); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></p>
 
-                <!-- Top row: 4 cards -->
-                <div id="ratesGridTop" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                <!-- Top row: 3 cards -->
+                <div id="ratesGridTop" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #1877F2 0%, #1565c0 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Conventional</div>
                         <div id="rateConv" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.875%</div>
@@ -951,19 +955,22 @@
                         <div id="rateVA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.250%</div>
                         <div style="font-size: 0.7rem; opacity: 0.8;">0% down</div>
                     </div>
+                </div>
+                <!-- Middle row: 2 cards -->
+                <div id="ratesGridMiddle" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 66%; margin: 0 auto 1rem auto;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">5/1 ARM</div>
                         <div id="rateARM" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.125%</div>
                         <div style="font-size: 0.7rem; opacity: 0.8;">Adjustable</div>
                     </div>
-                </div>
-                <!-- Bottom row: 3 cards centered -->
-                <div id="ratesGridBottom" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 75%; margin: 0 auto;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Jumbo</div>
                         <div id="rateJumbo" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">7.125%</div>
                         <div style="font-size: 0.7rem; opacity: 0.8;">$766k+</div>
                     </div>
+                </div>
+                <!-- Bottom row: 2 cards -->
+                <div id="ratesGridBottom" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; max-width: 66%; margin: 0 auto;">
                     <div class="rate-card" style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); color: white; padding: 1.25rem; border-radius: 10px; text-align: center; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">USDA</div>
                         <div id="rateUSDA" style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">6.375%</div>
@@ -1053,33 +1060,16 @@
                         <h2 style="margin-bottom: 0.25rem;">Rate History</h2>
                         <p style="color: var(--gray); margin: 0;">Historical mortgage rates from 2015 to present</p>
                     </div>
-                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label style="font-size: 0.85rem; color: var(--gray);">Range:</label>
-                            <select id="chartRangeSelect" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;">
-                                <option value="10">2015 - Present</option>
-                                <option value="20">2005 - Present</option>
-                                <option value="30">1995 - Present</option>
-                                <option value="50">1975 - Present</option>
-                                <option value="75">1950 - Present</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <label style="font-size: 0.85rem; color: var(--gray);">Lookup:</label>
-                            <input type="date" id="historicalDatePicker" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;" min="1950-01-01">
-                        </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <label style="font-size: 0.85rem; color: var(--gray);">Range:</label>
+                        <select id="chartRangeSelect" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #ddd; font-size: 0.85rem; cursor: pointer;">
+                            <option value="10">2015 - Present</option>
+                            <option value="20">2005 - Present</option>
+                            <option value="30">1995 - Present</option>
+                            <option value="50">1975 - Present</option>
+                            <option value="75">1950 - Present</option>
+                        </select>
                     </div>
-                </div>
-
-                <!-- Historical Rate Display (hidden by default) -->
-                <div id="historicalRateDisplay" style="display: none; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                        <div>
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--gray);">Rates on <span id="historicalDateLabel" style="font-weight: 600; color: var(--dark);"></span></p>
-                        </div>
-                        <button id="clearHistoricalDate" style="background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.85rem; text-decoration: underline;">Clear & Show Today</button>
-                    </div>
-                    <div id="historicalRatesGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 0.75rem;"></div>
                 </div>
 
                 <div style="position: relative; height: 450px; margin-bottom: 1rem;">
@@ -1543,16 +1533,6 @@
                         <h4>Year-over-Year Change</h4>
                         <div class="amount" style="color: #ef4444;">+3.2%</div>
                         <div class="detail">2024 vs 2023</div>
-                    </div>
-                    <div class="result-card">
-                        <h4>3-Year Average</h4>
-                        <div class="amount">$1,975</div>
-                        <div class="detail">2022-2024 avg</div>
-                    </div>
-                    <div class="result-card">
-                        <h4>3-Year Change</h4>
-                        <div class="amount" style="color: #ef4444;">+12.5%</div>
-                        <div class="detail">2022 to 2024</div>
                     </div>
                 </div>
             </div>
@@ -2185,58 +2165,18 @@
                 });
             }
 
-            // Historical date picker in chart section
-            const historicalDatePicker = document.getElementById('historicalDatePicker');
-            const historicalDisplay = document.getElementById('historicalRateDisplay');
-            const historicalDateLabel = document.getElementById('historicalDateLabel');
-            const historicalRatesGrid = document.getElementById('historicalRatesGrid');
-            const clearHistoricalBtn = document.getElementById('clearHistoricalDate');
-
-            if (historicalDatePicker) {
+            // Historical date picker at top of rates section
+            const historicalDate = document.getElementById('historicalDate');
+            if (historicalDate) {
                 // Set max date to today
-                historicalDatePicker.max = new Date().toISOString().split('T')[0];
+                historicalDate.max = new Date().toISOString().split('T')[0];
 
-                historicalDatePicker.addEventListener('change', function() {
+                historicalDate.addEventListener('change', function() {
                     if (!this.value) {
-                        historicalDisplay.style.display = 'none';
-                        return;
+                        resetToToday();
+                    } else {
+                        lookupHistoricalRate();
                     }
-
-                    const selectedDate = new Date(this.value);
-                    const year = selectedDate.getFullYear();
-                    const rates = getRatesForYear(year);
-
-                    // Format date nicely
-                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                    historicalDateLabel.textContent = selectedDate.toLocaleDateString('en-US', options);
-
-                    // Build mini rate cards
-                    const rateTypes = [
-                        { key: 'conventional', label: 'Conv', color: '#1877F2' },
-                        { key: 'fha', label: 'FHA', color: '#42b72a' },
-                        { key: 'va', label: 'VA', color: '#f7b928' },
-                        { key: 'arm', label: 'ARM', color: '#e74c3c' },
-                        { key: 'jumbo', label: 'Jumbo', color: '#9b59b6' },
-                        { key: 'usda', label: 'USDA', color: '#1abc9c' },
-                        { key: 'dscr', label: 'DSCR', color: '#e67e22' }
-                    ];
-
-                    historicalRatesGrid.innerHTML = rateTypes.map(rt => {
-                        const rate = rates[rt.key];
-                        return `<div style="text-align: center; padding: 0.5rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.75rem; color: var(--gray); margin-bottom: 0.25rem;">${rt.label}</div>
-                            <div style="font-size: 1.1rem; font-weight: 700; color: ${rt.color};">${rate ? rate.toFixed(2) + '%' : 'N/A'}</div>
-                        </div>`;
-                    }).join('');
-
-                    historicalDisplay.style.display = 'block';
-                });
-            }
-
-            if (clearHistoricalBtn) {
-                clearHistoricalBtn.addEventListener('click', function() {
-                    historicalDatePicker.value = '';
-                    historicalDisplay.style.display = 'none';
                 });
             }
         });
@@ -3017,8 +2957,6 @@
                     const max = parseInt(row.dataset.max);
                     if (score >= min && score <= max) {
                         row.classList.add('tier-active');
-                        // Scroll the row into view smoothly
-                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
             }
