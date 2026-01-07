@@ -1088,7 +1088,7 @@
         <!-- Mortgage Comparison Section -->
         <section id="mortgage" class="section">
             <div class="card">
-                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 20% vs 30%</h2>
+                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25%</h2>
                 <p style="color: var(--gray); margin-bottom: 1.5rem;" id="mortgageSubtitle">See how different down payments affect your monthly payment, PMI, and total cost.</p>
 
                 <div class="form-row">
@@ -1110,8 +1110,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="propertyTax">Property Tax (% yearly)</label>
-                        <input type="number" id="propertyTax" value="1.1" min="0" max="5" step="0.1">
+                        <label for="propertyTax">Property Tax ($/yr)</label>
+                        <input type="number" id="propertyTax" value="4400" min="0" max="100000" step="100">
                     </div>
                 </div>
 
@@ -1214,8 +1214,9 @@
                                     <th>Metric</th>
                                     <th>5% Down</th>
                                     <th>10% Down</th>
+                                    <th>15% Down</th>
                                     <th>20% Down</th>
-                                    <th>30% Down</th>
+                                    <th>25% Down</th>
                                 </tr>
                             </thead>
                             <tbody id="comparisonBody">
@@ -2334,7 +2335,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 20% vs 30%';
+                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25%';
                     subtitle.textContent = 'See how different down payments affect your monthly payment, PMI, and total cost.';
                     priceLabel.textContent = 'Home Price ($)';
                     homePrice.value = 400000;
@@ -2502,7 +2503,7 @@
             const adjustedPrice = Math.round(data.homePrice * dwelling.priceMultiplier);
             const adjustedInsurance = Math.round(data.insurance * dwelling.insuranceMultiplier);
 
-            document.getElementById('propertyTax').value = data.taxRate;
+            document.getElementById('propertyTax').value = Math.round(adjustedPrice * (data.taxRate / 100));
             document.getElementById('propertyInsurance').value = adjustedInsurance;
             document.getElementById('homePrice').value = adjustedPrice;
 
@@ -2684,7 +2685,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    downPayments = [5, 10, 20, 30];
+                    downPayments = [5, 10, 15, 20, 25];
                     break;
                 case 'multi-family':
                     const numUnits = parseInt(document.getElementById('numUnits').value);
@@ -2719,7 +2720,7 @@
                 const rate = currentPropertyType === 'commercial' ?
                     parseFloat(document.getElementById('commercialRate').value) : interestRate;
                 const monthlyPI = calculateMonthlyPayment(loanAmount, rate, loanTerm);
-                const monthlyTax = (homePrice * (propertyTax / 100)) / 12;
+                const monthlyTax = propertyTax / 12;
                 const monthlyInsurance = annualInsurance / 12;
 
                 // PMI only for residential under 20%
@@ -3251,10 +3252,11 @@
                         const stateInfo = stateData[detectedState];
                         const dwelling = dwellingData[currentDwellingType];
 
-                        document.getElementById('propertyTax').value = stateInfo.taxRate;
+                        const adjustedHomePrice = Math.round(stateInfo.homePrice * dwelling.priceMultiplier);
+                        document.getElementById('propertyTax').value = Math.round(adjustedHomePrice * (stateInfo.taxRate / 100));
                         document.getElementById('propertyInsurance').value = Math.round(stateInfo.insurance * dwelling.insuranceMultiplier);
                         document.getElementById('hoa').value = dwelling.avgHoa;
-                        document.getElementById('homePrice').value = Math.round(stateInfo.homePrice * dwelling.priceMultiplier);
+                        document.getElementById('homePrice').value = adjustedHomePrice;
 
                         // Update state displays
                         updateStateDefaults();
