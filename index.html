@@ -1088,7 +1088,7 @@
         <!-- Mortgage Comparison Section -->
         <section id="mortgage" class="section">
             <div class="card">
-                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25%</h2>
+                <h2 id="mortgageTitle">Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25% vs 30%</h2>
                 <p style="color: var(--gray); margin-bottom: 1.5rem;" id="mortgageSubtitle">See how different down payments affect your monthly payment, PMI, and total cost.</p>
 
                 <div class="form-row">
@@ -1217,6 +1217,7 @@
                                     <th>15% Down</th>
                                     <th>20% Down</th>
                                     <th>25% Down</th>
+                                    <th>30% Down</th>
                                 </tr>
                             </thead>
                             <tbody id="comparisonBody">
@@ -2335,7 +2336,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25%';
+                    title.textContent = 'Compare Down Payments: 5% vs 10% vs 15% vs 20% vs 25% vs 30%';
                     subtitle.textContent = 'See how different down payments affect your monthly payment, PMI, and total cost.';
                     priceLabel.textContent = 'Home Price ($)';
                     homePrice.value = 400000;
@@ -2685,7 +2686,7 @@
 
             switch(currentPropertyType) {
                 case 'single-family':
-                    downPayments = [5, 10, 15, 20, 25];
+                    downPayments = [5, 10, 15, 20, 25, 30];
                     break;
                 case 'multi-family':
                     const numUnits = parseInt(document.getElementById('numUnits').value);
