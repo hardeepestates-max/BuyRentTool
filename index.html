@@ -1837,14 +1837,15 @@
             2019: { conv: 4.00, note: 'Fed cuts rates' },
             2020: { conv: 3.00, note: 'COVID pandemic, historic lows' },
             2021: { conv: 3.00, note: 'Stimulus, inflation rising' },
-            2022: { conv: 5.50, note: 'Fed aggressive hikes' },
-            2023: { conv: 6.75, note: 'Rates stabilize high' },
-            2024: { conv: 6.875, note: 'Current market' }
+            2022: { conv: 5.34, note: 'Fed aggressive hikes, rates 3.2% to 6.5%' },
+            2023: { conv: 6.81, note: 'Peaked at 7.79% in October' },
+            2024: { conv: 6.72, note: 'Ranged 6.0% to 7.2%' },
+            2025: { conv: 6.95, note: 'Current market (Jan 2025)' }
         };
 
         // Get rates for a specific year with all loan types calculated
         function getRatesForYear(year) {
-            const baseData = historicalRatesByYear[year] || historicalRatesByYear[2024];
+            const baseData = historicalRatesByYear[year] || historicalRatesByYear[2025];
             const conv = baseData.conv;
 
             // Calculate other loan types based on conventional (historical spreads)
